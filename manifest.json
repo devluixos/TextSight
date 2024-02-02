@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "text-sight",
+	"name": "TextSight",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
+	"author": "Luiz Perren",
+	"authorUrl": "luizperren.dev",
 	"fundingUrl": "https://obsidian.md/pricing",
 	"isDesktopOnly": false
 }
