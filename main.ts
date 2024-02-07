@@ -1,36 +1,38 @@
-import { Plugin } from 'obsidian';
+import { ItemView, WorkspaceLeaf, Plugin } from 'obsidian';
+import { StatusBar } from './components/statusbar/StatusBar'; // Adjust path as necessary
+import { Sidebar } from 'components/sidebar/SideBar';
 
-export default class TextSight extends Plugin {
-	statusBarElement: HTMLSpanElement;
 
-	async onload() {
-		console.log('TextSight master thesis from Luiz Perren');
-		this.statusBarElement = this.addStatusBarItem().createEl('span');
-		this.readActiveFileAndUpdateLineCounter();
+export default class MyPlugin extends Plugin {
+	private statusBarComponent: StatusBar;
+    statusBar: HTMLElement;
 
-		this.app.workspace.on('active-leaf-change', async () => {
-			this.readActiveFileAndUpdateLineCounter();
-		});
+    async onload() {
+        this.registerView('my-sidebar', (leaf: WorkspaceLeaf) => new Sidebar(leaf));
+		this.statusBarComponent = new StatusBar(this);
+    }
 
-		this.app.workspace.on('editor-change', editor => {
-			const content = editor.getDoc().getValue();
-			this.updateLineCount(content);
-		})
+	navigateToSidebar() {
+		const leaves = this.app.workspace.getLeavesOfType('my-sidebar');
+		if (leaves.length > 0) {
+			this.app.workspace.setActiveLeaf(leaves[0]);
+		} else {
+			this.addSidebar();
+		}
 	}
 
-	private updateLineCount(fileContent?: string) {
-		const count = fileContent ? fileContent.split(/\r\n|\r|\n/).length : 0;
-		const lineWords = count === 1 ? "line" : "lines";
-		this.statusBarElement.textContent = `${count} ${lineWords}`;
-	}
+    addSidebar() {
+        if (this.app.workspace.getLeavesOfType('sidebar').length) {
+            return;
+        }
 
-	private async readActiveFileAndUpdateLineCounter() {
-		const file = this.app.workspace.getActiveFile();
-			if(file) {
-				const content = await this.app.vault.read(file);
-				console.log(content);
-			} else {
-				this.updateLineCount(undefined);
-			}
-	}
+        this.app.workspace.getRightLeaf(false).setViewState({
+            type: 'my-sidebar',
+            active: true,
+        });
+    }
+
+    onunload() {
+        this.statusBar.remove();
+    }
 }
