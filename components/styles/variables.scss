@@ -1,0 +1,24 @@
+// Importing Obsidian's CSS variables for direct use in SCSS
+@import url('https://docs.obsidian.md/Reference/CSS+variables/CSS+variables'); // Adjust this line as needed
+
+// Define additional colors based on your requirements
+$button-color: #ff71ce; // Bright pink for interactive elements
+$button-hover-color: #01cdfe; // Bright blue for hover states
+$button-click-color: #05ffa1; // Bright green for active/click states
+
+// Utilizing Obsidian Theme Colors as SCSS variables
+$background-color: var(--background-primary);
+$text-color: var(--text-normal);
+
+// Additional UI interaction colors not defined in Obsidian's default set
+$background-secondary: var(--background-secondary);
+$background-secondary-hover: lighten($background-secondary, 5%); // Adjusting for hover state
+$background-secondary-active: darken($background-secondary, 5%); // Adjusting for active state
+$text-accent: var(--text-accent);
+
+// Dimensions and miscellaneous variables
+$standard-padding: 16px;
+$sidebar-bottom-padding: 32px;
+$border-radius: 8px; // For rounded corners
+$transition-speed: 0.3s; // For smooth transitions
+

@@ -38,7 +38,7 @@ export class StatusBar {
                 type: 'my-sidebar',
                 active: true,
             }).then(() => {
-                // Optionally, focus on the new sidebar if needed
+                // Focus on the new sidebar if needed
                 const newLeaf = this.plugin.app.workspace.getLeavesOfType('my-sidebar')[0];
                 if (newLeaf) {
                     this.plugin.app.workspace.setActiveLeaf(newLeaf, { focus: false }); // false to not focus in edit mode

@@ -1,0 +1,58 @@
+// Assuming Obsidian's CSS variables are accessible
+@import '../styles/variables.scss'; // Adjust path as necessary
+
+.tab-container {
+  .custom-tab-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .custom-tab {
+    flex-grow: 1;
+    transition: background-color $transition-speed ease, color $transition-speed ease;
+    background-color: $background-color;
+    color: $text-color;
+    text-align: center;
+
+    &:hover, &:focus {
+      background-color: lighten($background-color, 5%); // Slightly lighter than primary background
+    }
+  }
+
+  .custom-tab[aria-selected="true"] {
+    background-color: $button-color; // Bright pink for selected tab
+    color: $button-hover-color; // Bright blue for selected tab text
+  }
+
+  .custom-paper {
+    margin-top: 20px;
+    padding: $standard-padding;
+    background-color: darken($background-color, 5%); // Slightly darker for contrast
+    color: $text-color;
+    border-radius: $border-radius;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+
+    .custom-button {
+      transition: transform $transition-speed ease, background-color $transition-speed ease;
+      background-color: $button-color; // Bright pink
+      color: $text-color;
+      border-radius: $border-radius;
+
+      &:hover {
+        transform: translateY(-2px);
+        background-color: $button-hover-color; // Bright blue
+      }
+
+      &:active {
+        transform: translateY(1px);
+        background-color: $button-click-color; // Bright green
+      }
+    }
+  }
+}

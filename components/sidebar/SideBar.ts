@@ -1,6 +1,9 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
+import Component from './SideBar.svelte';
 
 export class Sidebar extends ItemView {
+    component: Component;
+
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);
     }
@@ -18,6 +21,12 @@ export class Sidebar extends ItemView {
     }
 
     async onOpen() {
+        this.component = new Component({
+            target: this.contentEl,
+            props: {
+              variable: 1
+            }
+        });
         this.containerEl.addClass('my-sidebar');
         // Title
         const title = document.createElement('h2');
@@ -47,5 +56,8 @@ export class Sidebar extends ItemView {
         this.containerEl.appendChild(statusLabel);
     }
 
+    async onClose() {
+        this.component.$destroy();
+    }
     
 }
