@@ -24,6 +24,7 @@ const context = await esbuild.context({
         esbuildSvelte({
             compilerOptions: { css: "injected" },
             preprocess: sveltePreprocess({
+                typescript: true,
                 scss: {
                     includePaths: ['components/styles', 'components'],
                 },
@@ -31,10 +32,6 @@ const context = await esbuild.context({
                     plugins: [autoprefixer()],
                 },
             }),
-        }),
-        // Define or import your postcssPlugin correctly if needed
-        postcssPlugin({
-            plugins: [autoprefixer()],
         }),
     ],
     external: [

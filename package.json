@@ -12,13 +12,6 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
-		"@smui/button": "^7.0.0-beta.16",
-		"@smui/card": "^7.0.0-beta.16",
-		"@smui/paper": "^7.0.0-beta.16",
-		"@smui/tab": "^7.0.0-beta.16",
-		"@smui/tab-bar": "^7.0.0-beta.16",
-		"@smui/tab-indicator": "^7.0.0-beta.16",
-		"@smui/tab-scroller": "^7.0.0-beta.16",
 		"@tsconfig/svelte": "^5.0.2",
 		"@types/node": "^16.11.6",
 		"@types/react": "^18.2.55",
@@ -31,18 +24,16 @@
 		"esbuild-svelte": "^0.8.0",
 		"obsidian": "latest",
 		"postcss": "^8.4.35",
-		"sass": "^1.70.0",
-		"smui-theme": "^7.0.0-beta.16",
+		"sass": "^1.71.0",
 		"svelte": "^4.2.10",
 		"svelte-preprocess": "^5.1.3",
 		"tslib": "2.4.0",
-		"typescript": "4.7.4",
-		"prepare": "npm run smui-theme-light && npm run smui-theme-dark",
-		"smui-theme-light": "smui-theme compile static/smui.css -i src/theme",
-		"smui-theme-dark": "smui-theme compile static/smui-dark.css -i src/theme/dark"
+		"typescript": "4.7.4"
 	},
 	"dependencies": {
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0"
+		"react-dom": "^18.2.0",
+		"wink-eng-lite-web-model": "^1.5.2",
+		"wink-nlp": "^1.14.3"
 	}
 }
