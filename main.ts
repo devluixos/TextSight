@@ -24,7 +24,6 @@ export default class MyPlugin extends Plugin {
         if (this.app.workspace.getLeavesOfType('sidebar').length) {
             return;
         }
-
         this.app.workspace.getRightLeaf(false).setViewState({
             type: 'my-sidebar',
             active: true,
