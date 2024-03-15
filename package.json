@@ -32,6 +32,8 @@
 	},
 	"dependencies": {
 		"@mlc-ai/web-llm": "^0.2.23",
+		"dotenv": "^16.4.5",
+		"openai": "^4.28.4",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"wink-eng-lite-web-model": "^1.5.2",

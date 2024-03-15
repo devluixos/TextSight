@@ -2,7 +2,6 @@ import { ItemView, WorkspaceLeaf, Plugin } from 'obsidian';
 import { StatusBar } from './components/statusbar/StatusBar'; // Adjust path as necessary
 import { Sidebar } from 'components/sidebar/SideBar';
 
-
 export default class MyPlugin extends Plugin {
 	private statusBarComponent: StatusBar;
     statusBar: HTMLElement;

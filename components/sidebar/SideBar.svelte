@@ -1,32 +1,57 @@
 <script lang="ts">
-  import { generateResponse } from '../../nlp/nlpService';
+  import { callGPT4 } from '../../nlp/nlpService';
+  import { onMount, onDestroy } from 'svelte';
+  import { App, WorkspaceLeaf } from 'obsidian';
 
   let activeTab = 'Home';
-  let sampleText = 'The name of Zermatt, as well as that of the Matterhorn itself, derives from the alpine meadows, or matten (in German), in the valley. The name appeared first as Zur Matte ("at the meadow") and became later Zermatt. It does not appear until 1495 on a map or 1546 in a text, but may have been employed long before.' +
-  'Praborno or Prato Borno (Prato also means meadow) are the older names of Zermatt; they appear in the ancient maps as early as the thirteenth century.[5] The Romand-speaking people from the Aosta Valley and from the Romand-speaking part of canton Wallis (Valais) used this name until about 1860 in the form of Praborne, or Praborgne.' + 
-  'The reason of this change from Praborno to Zermatt is attributed to the gradual replacement of the Romance-speaking people by German-speaking colony.[6][7]';
+  let openLeaves: WorkspaceLeaf[] = [];
 
-  let responseText = ''; // Add this line
+  onMount(() => {
+    // Get all the open leaves
+    openLeaves = app.workspace.getLeavesOfType('markdown');
+    app.workspace.on('layout-change', updateLeaves);
 
+  });
+
+  onDestroy(() => {
+    // Unsubscribe from layout-change event when the component is destroyed
+    app.workspace.off('layout-change', updateLeaves);
+  });
+
+  function updateLeaves() {
+    openLeaves = app.workspace.getLeavesOfType('markdown');
+    console.log('openLeaves: ', openLeaves);
+  }
+
+  let apiResponse
   async function analyzeText(text: string) {
-    responseText = await generateResponse(text); // Modify this line
-    console.log(responseText);
+    callGPT4("sampleText")
+      .then((content) => {
+        apiResponse = content || '{}';
+        console.log('apiResponse: \n', apiResponse);
+      })
+      .catch(console.error);
   }
 </script>
 
 <div class="tabs-container">
-<button class="tab" on:click={() => (activeTab = 'Home')}>Home</button>
-<button class="tab" on:click={() => (activeTab = 'Merchandise')}>Merchandise</button>
+  <button class="tab" on:click={() => (activeTab = 'Home')}>Home</button>
+  <button class="tab" on:click={() => (activeTab = 'Merchandise')}>Merchandise</button>
 </div>
 
 {#if activeTab === 'Home'}
-<div class="content home-content">
-  Content 1
-  <button on:click={() => analyzeText(sampleText)}>Analyze Text</button>
-  <p>{responseText}</p>
-</div>
+  <div class="content home-content">
+    Content 1
+    <button on:click={() => analyzeText("test")}>Analyze Text</button>
+    <label for="leaf-select">Select a leaf:</label>
+    <select id="leaf-select">
+      {#each openLeaves as leaf (leaf)}
+        <option value={leaf}>{leaf.getDisplayText()}</option>
+      {/each}
+    </select>
+  </div>
 {:else if activeTab === 'Merchandise'}
-<div class="content merchandise-content">Content 2</div>
+  <div class="content merchandise-content">Content 2</div>
 {/if}
 
 <style lang="scss">
