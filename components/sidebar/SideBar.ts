@@ -23,10 +23,8 @@ export class Sidebar extends ItemView {
     async onOpen() {
         this.component = new Component({
             target: this.contentEl,
-            props: {
-              variable: 1
-            }
         });
+        /*
         this.containerEl.addClass('my-sidebar');
         // Title
         const title = document.createElement('h2');
@@ -54,6 +52,7 @@ export class Sidebar extends ItemView {
         const statusLabel = document.createElement('p');
         statusLabel.textContent = 'Select a document to analyze';
         this.containerEl.appendChild(statusLabel);
+        */
     }
 
     async onClose() {

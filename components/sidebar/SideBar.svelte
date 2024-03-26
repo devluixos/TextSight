@@ -13,11 +13,11 @@
   });
 
   function updateLeaves() {
-    openLeaves = app.workspace.getLeavesOfType('markdown');
+    openLeaves = this.app.workspace.getLeavesOfType('markdown');
   }
 
   function updateSelectedLeaf() {
-    const activeLeaf = app.workspace.activeLeaf;
+    const activeLeaf = this.app.workspace.activeLeaf;
     selectedLeafId.update(current => {
       // Only update if the active leaf has actually changed
       if (activeLeaf && openLeaves.includes(activeLeaf) && current !== activeLeaf) {
@@ -27,17 +27,34 @@
     });
   }
 
+  async function analyseActiveLeafContentAndCallAPI() {
+    const activeLeaf = this.app.workspace.activeLeaf;
+    if (!activeLeaf) {
+      console.error("No active leaf found.");
+      return;
+    }
 
-  let apiResponse;
-  async function analyzeText(text: string) {
-    try {
-      const content = await callGPT4(text);
-      apiResponse = content || '{}';
-      console.log('apiResponse: \n', apiResponse);
-    } catch (error) {
-      console.error(error);
+    let content = '';
+    selectedLeaf.subscribe((leaf) => {
+      if (leaf) {
+        content = leaf.view.containerEl.textContent ?? '';
+      }
+    });
+    if (content) {
+      try {
+        console.log("Calling API with content:", content)
+        const apiResponse = await callGPT4(content);
+        console.log("API Response:", apiResponse);
+        // Handle the API response as needed, e.g., display results to the user
+      } catch (error) {
+        console.error("Failed to analyze text:", error);
+        // Handle or display the error as appropriate
+      }
+    } else {
+      console.log("The active leaf does not contain any content to analyze.");
     }
   }
+
 
   // Define variables for unsubscription outside of onMount to ensure they are in the correct scope
   let unsubscribeLayoutChange: EventRef;
@@ -46,15 +63,15 @@
   onMount(() => {
     updateLeaves();
     // Subscribe to layout changes
-    unsubscribeLayoutChange = app.workspace.on('layout-change', updateLeaves);
+    unsubscribeLayoutChange = this.app.workspace.on('layout-change', updateLeaves);
     // Subscribe to active leaf changes
-    unsubscribeActiveLeafChange = app.workspace.on('active-leaf-change', updateSelectedLeaf);
+    unsubscribeActiveLeafChange = this.app.workspace.on('active-leaf-change', updateSelectedLeaf);
   });
 
   onDestroy(() => {
     // Use app.workspace.off with the specific event references to unsubscribe
-    app.workspace.off('layout-change', unsubscribeLayoutChange as (...data: any) => any);
-    app.workspace.off('active-leaf-change', unsubscribeActiveLeafChange as (...data: any) => any);
+    this.app.workspace.off('layout-change', unsubscribeLayoutChange as (...data: any) => any);
+    this.app.workspace.off('active-leaf-change', unsubscribeActiveLeafChange as (...data: any) => any);
   });
 </script>
 
@@ -68,13 +85,14 @@
 {#if activeTab === 'Home'}
   <div class="content home-content">
     Content 1
-    <button on:click={() => analyzeText("test")}>Analyze Text</button>
+    <button on:click={() => analyseActiveLeafContentAndCallAPI()}>Analyze Text</button>
     <label for="leaf-select">Select a leaf:</label>
     <select id="leaf-select" bind:value={$selectedLeafId}>
       {#each openLeaves as leaf (leaf)}
         <option value={leaf}>{leaf.getDisplayText()}</option>
       {/each}
     </select>
+    <button on:click={() => console.log("database")}>DataBase</button>
   </div>
 {:else if activeTab === 'Merchandise'}
   <div class="content merchandise-content">Content 2</div>
