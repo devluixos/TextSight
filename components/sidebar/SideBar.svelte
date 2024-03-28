@@ -28,31 +28,40 @@
   }
 
   async function analyseActiveLeafContentAndCallAPI() {
-    const activeLeaf = this.app.workspace.activeLeaf;
-    if (!activeLeaf) {
-      console.error("No active leaf found.");
-      return;
-    }
+  const activeLeaf = this.app.workspace.activeLeaf;
+  if (!activeLeaf) {
+    console.error("No active leaf found.");
+    return;
+  }
 
-    let content = '';
-    selectedLeaf.subscribe((leaf) => {
-      if (leaf) {
-        content = leaf.view.containerEl.textContent ?? '';
-      }
-    });
-    if (content) {
-      try {
-        console.log("Calling API with content:", content)
-        const apiResponse = await callGPT4(content);
-        console.log("API Response:", apiResponse);
-        // Handle the API response as needed, e.g., display results to the user
-      } catch (error) {
-        console.error("Failed to analyze text:", error);
-        // Handle or display the error as appropriate
-      }
-    } else {
-      console.log("The active leaf does not contain any content to analyze.");
+  let content = '';
+  let leafId = activeLeaf.id;
+  console.log('leaf id', leafId);
+  selectedLeaf.subscribe((leaf) => {
+    if (leaf) {
+      content = leaf.view.containerEl.textContent ?? '';
     }
+  });
+  
+  if (content && leafId) {
+    try {
+      console.log("Calling API with content:", content);
+      const apiResponse = await callGPT4(content);
+      console.log("API Response:", apiResponse);
+      // Here, you can call your database function and pass `leafId` along with `apiResponse`
+    } catch (error) {
+      console.error("Failed to analyze text:", error);
+    }
+  } else {
+    console.log("The active leaf does not contain any content to analyze or leaf ID is missing.");
+  }
+}
+
+  function getLeafIdentifier() {
+    console.log('leaf id', selectedLeafId);
+    console.log('leaf', selectedLeaf.subscribe((leaf) => {
+      console.log('leaf', leaf);
+    }));
   }
 
 
@@ -92,7 +101,7 @@
         <option value={leaf}>{leaf.getDisplayText()}</option>
       {/each}
     </select>
-    <button on:click={() => console.log("database")}>DataBase</button>
+    <button on:click={ () => getLeafIdentifier()}>DataBase</button>
   </div>
 {:else if activeTab === 'Merchandise'}
   <div class="content merchandise-content">Content 2</div>

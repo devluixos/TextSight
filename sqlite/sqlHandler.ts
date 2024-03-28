@@ -1,56 +1,28 @@
-// sqlHandler.ts
-import Database from 'better-sqlite3';
-import fs from 'fs';
-import path from 'path';
+import Dexie from 'dexie';
 
-export function initializeDatabase() {
-    const dbDir = 'sqlite';
-    const dbName = 'database.db';
-    const dbPath = path.join(dbDir, dbName);
-
-    console.log(`Initializing database at ${dbPath}`);
-
-    if (!fs.existsSync(dbDir)){
-        console.log(`Directory ${dbDir} does not exist, creating it`);
-        fs.mkdirSync(dbDir);
+class TextAnalysisDB extends (Dexie as any) {
+    constructor() {
+        super('TextAnalysisDB');
+        this.version(1).stores({
+            documents: '++id, filePath, lastAnalyzed',
+            entities: '++id, documentId, text, type, weight, [documentId+text]',
+            topics: '++id, documentId, name, weight, [documentId+name]',
+            keywords: '++id, documentId, keyword, importance, weight, [documentId+keyword]',
+            relations: '++id, documentId, entity1, relation, entity2, weight',
+            coreferences: '++id, documentId, text, reference, weight'
+        });
     }
+}
 
-    const db = new Database(dbPath);
+export const db = new TextAnalysisDB();
 
-    db.exec(`
-        CREATE TABLE IF NOT EXISTS documents (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filePath TEXT UNIQUE NOT NULL,
-            lastAnalyzed TEXT NOT NULL
-        );
+export async function initializeDatabase() {
+    console.log('Database initialized');
+    const allDocuments = await db.documents.toArray();
+    console.log("Documents table content:", allDocuments);
+}
 
-        CREATE TABLE IF NOT EXISTS entities (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            documentId INTEGER NOT NULL,
-            text TEXT NOT NULL,
-            type TEXT NOT NULL,
-            weight REAL,
-            FOREIGN KEY(documentId) REFERENCES documents(id)
-        );
-
-        CREATE TABLE IF NOT EXISTS topics (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            documentId INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            weight REAL,
-            FOREIGN KEY(documentId) REFERENCES documents(id)
-        );
-
-        CREATE TABLE IF NOT EXISTS similarities (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            documentId INTEGER NOT NULL,
-            documentName TEXT NOT NULL,
-            similarityScore REAL,
-            FOREIGN KEY(documentId) REFERENCES documents(id)
-        );
-    `);
-
-    console.log("Database initialized with required tables.");
-
-    return db;
+export async function logDatabaseContent() {
+    const allDocuments = await db.documents.toArray();
+    console.log("Documents table content:", allDocuments);
 }

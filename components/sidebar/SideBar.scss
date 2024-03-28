@@ -3,7 +3,8 @@
 .tabs-container {
   display: flex;
   justify-content: space-between;
-  background-color: yellow; /* Obsidian variable for tab bar background */
+  height: 4em;
+  background-color: green;
 }
 
 .tab {

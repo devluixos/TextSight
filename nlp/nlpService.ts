@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: '../' });
 
 const openai = new OpenAI({
-  apiKey: 'HERE API KEY',
+  apiKey: 'api key here',
   dangerouslyAllowBrowser: true
 });
 
@@ -24,29 +24,47 @@ export async function callGPT4(promptText: string) {
 
 function promptBuilder(prompt: string) {
   let finalPrompt = `
-    Analyze the provided text to extract the following information, structuring the results exclusively in JSON format:
-    Named Entity Recognition (NER): Identify and categorize entities (people, places, organizations, etc.), with a list of entities and their types.
-    Topic Modeling: Identify the overarching topics or themes.
-    Semantic Similarity: Compare the text to a predefined set of topics or documents to find semantic similarities, listing the most similar topics or documents.
-
+    Analyze the text to extract key insights in JSON format: 
+    1. Perform Named Entity Recognition (NER) to identify and categorize entities such as people, 
+      places, and organizations, including a 'weight' to denote importance. 
+    2. Conduct Topic Modeling to pinpoint overarching themes, assigning a 'weight' for relevance. 
+    3. Extract keywords highlighting crucial concepts, again with 'weight' for significance. 
+    4. Identify relationships between entities (Relation Extraction) and resolve references to the same entity
+      (Coreference Resolution), each with respective 'weights'. Structure results as per defined JSON.
     Structure the JSON output as follows:
     {
-    "namedEntityRecognition": {
-      "entities": [
-        {"text": "", "type": "", "weight": 0}
-      ]
-    },
-    "topicModeling": {
-      "topics": [
-        {"name": "", "weight": 0}
-      ]
-    },
-    "semanticSimilarity": {
-      "similarities": [
-        {"documentName": "", "similarityScore": 0}
-      ]
+      "namedEntityRecognition": {
+        "entities": [
+          {"text": "", "type": "", "weight": 0}
+        ]
+      },
+      "topicModeling": {
+        "topics": [
+          {"name": "", "weight": 0}
+        ]
+      },
+      "sentimentAnalysis": {
+        "overallSentiment": "",
+        "score": 0,
+        "weight": 0
+      },
+      "keywordExtraction": {
+        "keywords": [
+          {"keyword": "", "importance": 0, "weight": 0}
+        ]
+      },
+      "relationExtraction": {
+        "relations": [
+          {"entity1": "", "relation": "", "entity2": "", "weight": 0}
+        ]
+      },
+      "coreferenceResolution": {
+        "coreferences": [
+          {"text": "", "reference": "", "weight": 0}
+        ]
+      }
     }
-    }
+    
 
     <<TEXT START>>
       ${prompt}

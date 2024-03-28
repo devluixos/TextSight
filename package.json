@@ -33,7 +33,7 @@
 	},
 	"dependencies": {
 		"@mlc-ai/web-llm": "^0.2.23",
-		"better-sqlite3": "^9.4.3",
+		"dexie": "^4.0.1",
 		"dotenv": "^16.4.5",
 		"openai": "^4.28.4",
 		"react": "^18.2.0",
