@@ -3,7 +3,7 @@
   import { onMount, onDestroy } from 'svelte';
   import type { EventRef, WorkspaceLeaf } from 'obsidian';
   import { callGPT4 } from '../../nlp/nlpService';
-	import { logDatabaseContent, saveAnalysisResults } from '../../sqlite/sqlHandler';
+	import { db, logDatabaseContent, saveAnalysisResults } from '../../sqlite/sqlHandler';
 
   let activeTab = 'Home';
   let openLeaves: WorkspaceLeaf[] = [];
@@ -43,7 +43,14 @@
         content = leaf.view.containerEl.textContent ?? '';
       }
     });
-    
+
+    // Check if the document already exists in the database
+    const documentExists = await db.documents.get(leafId);
+    if (documentExists) {
+      console.log('Document already exists in the database. STOP');
+      return;
+    }
+
     if (content && leafId) {
       try {
         console.log("Calling API with content:", content);
@@ -58,14 +65,6 @@
       console.log("The active leaf does not contain any content to analyze or leaf ID is missing.");
     }
   }
-
-  function getLeafIdentifier() {
-    console.log('leaf id', selectedLeafId);
-    console.log('leaf', selectedLeaf.subscribe((leaf) => {
-      console.log('leaf', leaf);
-    }));
-  }
-
 
   // Define variables for unsubscription outside of onMount to ensure they are in the correct scope
   let unsubscribeLayoutChange: EventRef;
