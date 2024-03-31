@@ -26,3 +26,29 @@ export async function logDatabaseContent() {
     const allDocuments = await db.documents.toArray();
     console.log("Documents table content:", allDocuments);
 }
+
+
+export async function saveAnalysisResults(leafId: any, apiResponse: any) {
+    let analysisResponse;
+    try {
+        console.log('API response in sqlhandler:', apiResponse);
+        analysisResponse = JSON.parse(apiResponse); // Assuming apiResponse.content is a JSON string
+    } catch (error) {
+      console.error("Failed to parse API response:", error);
+      return;
+    }
+  
+    if (analysisResponse.namedEntityRecognition?.entities) {
+      for (const entity of analysisResponse.namedEntityRecognition.entities) {
+        console.log('Entity:', entity);
+        await db.entities.add({ ...entity, documentId: leafId });
+      }
+    } else {
+      console.error("No entities found in the analysis response.");
+    }
+  
+    // Add similar checks and loops for topics, keywords, etc.
+    console.log('Analysis results saved for leaf ID:', leafId);
+  }
+  
+
