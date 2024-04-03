@@ -1,7 +1,7 @@
 import { ItemView, WorkspaceLeaf, Plugin } from 'obsidian';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { Sidebar } from './components/sidebar/SideBar';
-import { initializeDatabase } from 'sqlite/sqlHandler';
+import { initializeDatabase, clearDatabase } from 'sqlite/sqlHandler';
 export default class MyPlugin extends Plugin {
 	private statusBarComponent: StatusBar;
     statusBar: HTMLElement;
@@ -10,6 +10,7 @@ export default class MyPlugin extends Plugin {
         this.registerView('my-sidebar', (leaf: WorkspaceLeaf) => new Sidebar(leaf));
 		this.statusBarComponent = new StatusBar(this);
         initializeDatabase();
+        clearDatabase();
     }
 
 	navigateToSidebar() {

@@ -1,68 +1,82 @@
 <script lang="ts">
-  import { writable, derived } from 'svelte/store';
+  import { writable, derived, get } from 'svelte/store';
   import { onMount, onDestroy } from 'svelte';
   import type { EventRef, WorkspaceLeaf } from 'obsidian';
   import { callGPT4 } from '../../nlp/nlpService';
-	import { db, logDatabaseContent, saveAnalysisResults } from '../../sqlite/sqlHandler';
+	import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase } from '../../sqlite/sqlHandler';
 
-  let activeTab = 'Home';
-  let openLeaves: WorkspaceLeaf[] = [];
-  let selectedLeafId = writable<WorkspaceLeaf | null>(null);
+  let activeTab = 'Analysis';
+  let openLeaves: any[] = [];
+  let selectedLeaf = writable<any | null>(null);
+  let currentLeaf: any;
+  let leafExistsInDatabase = false;
+  let activeLeaf: any;
 
-  let selectedLeaf = derived(selectedLeafId, ($selectedLeafId) => {
-    return openLeaves.find(leaf => leaf === $selectedLeafId) || null;
-  });
+
+
+//-----------------------------------------------------------------------------------------------
+// Store to keep track of the selected leaf based on the selected leaf ID for Dropdown selection
+//-----------------------------------------------------------------------------------------------
+  function handleLeafSelection() { 
+    currentLeaf = get(selectedLeaf);
+  }  
 
   function updateLeaves() {
     openLeaves = this.app.workspace.getLeavesOfType('markdown');
   }
 
   function updateSelectedLeaf() {
-    const activeLeaf = this.app.workspace.activeLeaf;
-    selectedLeafId.update(current => {
-      // Only update if the active leaf has actually changed
+    activeLeaf = this.app.workspace.activeLeaf;
+    selectedLeaf.update(current => {
       if (activeLeaf && openLeaves.includes(activeLeaf) && current !== activeLeaf) {
+        console.log('Active leaf:', activeLeaf);
+        console.log('activeLeaf.id:', activeLeaf.id);
         return activeLeaf;
       }
       return current;
     });
   }
 
+
+//--------------------------------------------------------------------
+// Function to call the API and analyze the content of the active leaf
+//--------------------------------------------------------------------
   async function analyseActiveLeafContentAndCallAPI() {
-    // Get the current active leaf
-    const activeLeaf = this.app.workspace.activeLeaf;
-    if (!activeLeaf) {
-        console.error("No active leaf found.");
-        return;
+    console.log(get(selectedLeaf));
+    let content = get(selectedLeaf).view.containerEl.textContent;
+    let leafId = get(selectedLeaf).id;
+    console.log('Leaf ID:', leafId);
+    console.log('Content:', content);
+
+    //Check if leaf exists in the database
+    await checkLeaf(leafId);
+    if(leafExistsInDatabase) {
+      console.log('Leaf already exists in the database: exists:', leafExistsInDatabase);
+      return;
     }
 
-    // Ensure the leaf has an associated file (TFile object)
-    const file = activeLeaf.view.file;
-    if (!file) {
-        console.error("Active leaf does not have an associated file.");
-        return;
-    }
-
-    // Get the file path from the TFile object
-    let filePath = file.path;
-    console.log('File path:', filePath);
-
-    // Now you can use the file path as needed, for example, to read the file content
-    const fileContent = await this.app.vault.read(file);
-
-    // Proceed with your analysis using fileContent and filePath
-    if (fileContent) {
-        console.log("Analyzing content from file path:", filePath);
-        const apiResponse = await callGPT4(fileContent);
+    if (content && leafId) {
+      try {
+        console.log("Calling API with content:", content);
+        const apiResponse = await callGPT4(content);
         console.log("API response:", apiResponse);
-        // Further processing, such as saving the analysis results
+        saveAnalysisResults(leafId, apiResponse);
+      } catch (error) {
+        console.error("Failed to analyze text:", error);
+      }
     } else {
-        console.error("Failed to read file content.");
+      console.log("The active leaf does not contain any content to analyze or leaf ID is missing. or it already exists in the DB");
     }
-}
+  }
 
+  //Check if ID exists
+  async function checkLeaf(leafIdParam: any) {
+    leafExistsInDatabase = await checkIfLeafExistsInDatabase(leafIdParam);
+  }
 
-  // Define variables for unsubscription outside of onMount to ensure they are in the correct scope
+//-----------------------------------------------------------------------------------------------
+// Define variables for unsubscription outside of onMount to ensure they are in the correct scope
+//-----------------------------------------------------------------------------------------------
   let unsubscribeLayoutChange: EventRef;
   let unsubscribeActiveLeafChange: EventRef;
 
@@ -82,26 +96,34 @@
 </script>
 
 
-<!-- UI for switching tabs and displaying content based on the active tab -->
+<!---------------------------------------------------------------------------
+UI for switching tabs and displaying content based on the active tab 
+---------------------------------------------------------------------------->
 <div class="tabs-container">
-  <button class="tab" on:click={() => (activeTab = 'Home')}>Home</button>
-  <button class="tab" on:click={() => (activeTab = 'Merchandise')}>Merchandise</button>
+  <button class="tab" on:click={() => (activeTab = 'Analysis')}>Analysis</button>
+  <button class="tab" on:click={() => (activeTab = 'TextSight')}>TextSight</button>
 </div>
 
-{#if activeTab === 'Home'}
-  <div class="content home-content">
+{#if activeTab === 'Analysis'}
+  <div class="content analysis-content">
     Content 1
     <button on:click={() => analyseActiveLeafContentAndCallAPI()}>Analyze Text</button>
     <label for="leaf-select">Select a leaf:</label>
-    <select id="leaf-select" bind:value={$selectedLeafId}>
+    <select id="leaf-select" bind:value={$selectedLeaf} on:change={handleLeafSelection}>
       {#each openLeaves as leaf (leaf)}
         <option value={leaf}>{leaf.getDisplayText()}</option>
       {/each}
     </select>
+    {#if leafExistsInDatabase}
+      <p class="p-error">The leaf already exists in the database.</p>
+    {:else}
+      <p>The leaf does not exist in the database.</p>
+    {/if}
+    <br />
     <button on:click={ () => logDatabaseContent()}>DataBase</button>
   </div>
-{:else if activeTab === 'Merchandise'}
-  <div class="content merchandise-content">Content 2</div>
+{:else if activeTab === 'TextSight'}
+  <div class="content textsight-content">Content 2</div>
 {/if}
 
 <style lang="scss">

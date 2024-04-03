@@ -4,7 +4,7 @@ class TextAnalysisDB extends (Dexie as any) {
     constructor() {
         super('TextAnalysisDB');
         this.version(1).stores({
-            documents: '++id, filePath, lastAnalyzed',
+            documents: '++id, documentId, lastAnalyzed',
             entities: '++id, documentId, text, type, weight, [documentId+text]',
             topics: '++id, documentId, name, weight, [documentId+name]',
             keywords: '++id, documentId, keyword, importance, weight, [documentId+keyword]',
@@ -46,7 +46,7 @@ export async function logDatabaseContent() {
   }
 
 
-export async function saveAnalysisResults(leafId: any, apiResponse: any, filePath: string) {
+export async function saveAnalysisResults(leafId: any, apiResponse: any) {
     let analysisResponse;
     try {
         console.log('API response in sqlhandler:', apiResponse);
@@ -56,13 +56,12 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any, filePat
       return;
     }
   
-    // Save Document ID and File Path
-    await db.documents.add({ leafId: leafId, filePath: filePath, lastAnalyzed: new Date() });
+    // Save Document ID and Last Analyzed timestamp
+    await db.documents.add({ documentId: leafId, lastAnalyzed: new Date() });
 
     // Save Named Entities
     if (analysisResponse.namedEntityRecognition?.entities) {
       for (const entity of analysisResponse.namedEntityRecognition.entities) {
-        console.log('Entity:', entity);
         await db.entities.add({ ...entity, documentId: leafId });
       }
     }
@@ -91,7 +90,6 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any, filePat
     // Save Coreference Resolution
     if (analysisResponse.coreferenceResolution?.coreferences) {
         for (const coreference of analysisResponse.coreferenceResolution.coreferences) {
-            console.log('Coreference:', coreference);
             await db.coreferences.add({ ...coreference, documentId: leafId });
         }
     }
@@ -106,9 +104,18 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any, filePat
     // Add similar checks and loops for topics, keywords, etc.
     console.log('Analysis results saved for leaf ID:', leafId);
   }
-  
 
-  async function clearDatabase() {
+  export async function checkIfLeafExistsInDatabase(leafId: string): Promise<boolean> {
+    const leaf = await db.documents.where('documentId').equals(leafId).first();
+    // If the leaf exists in the database, return true
+    if (leaf !== undefined) {
+      return true;
+    }
+    // If the leaf does not exist in the database, return false
+    return false;
+  }
+
+  export async function clearDatabase() {
     await db.transaction('rw', db.documents, db.entities, db.topics, db.keywords, db.relations, db.coreferences, db.sentiments, async () => {
       await db.documents.clear();
       await db.entities.clear();
