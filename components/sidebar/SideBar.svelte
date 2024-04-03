@@ -44,7 +44,7 @@
   async function analyseActiveLeafContentAndCallAPI() {
     console.log(get(selectedLeaf));
     let content = get(selectedLeaf).view.containerEl.textContent;
-    let leafId = get(selectedLeaf).id;
+    let leafId = get(selectedLeaf).view.file.path;
     console.log('Leaf ID:', leafId);
     console.log('Content:', content);
 
