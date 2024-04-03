@@ -1,9 +1,22 @@
 import OpenAI from 'openai';
 import * as dotenv from 'dotenv';
-dotenv.config({ path: '../' });
+
+const basePath = (app.vault.adapter as any).basePath
+
+//Load environment variables
+dotenv.config({
+  path: `${basePath}/.obsidian/plugins/TextSight/KEYS.env`,
+  debug: false
+ })
+
+// Check if OPENAI_API_KEY is defined
+if (!process.env.OPENAI_API_KEY) {
+  console.log('The OPENAI_API_KEY environment variable is not defined');  
+  throw new Error('The OPENAI_API_KEY environment variable is not defined');
+}
 
 const openai = new OpenAI({
-  apiKey: 'API KEY HERE',
+  apiKey: process.env.OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 });
 

@@ -20,5 +20,5 @@
       "ES7"
     ]
   },
-	"include": ["**/*.ts", "**/*.tsx"]
+	"include": ["**/*.ts", "**/*.tsx, *.env"]
 }
