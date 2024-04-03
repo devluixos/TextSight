@@ -29,42 +29,38 @@
   }
 
   async function analyseActiveLeafContentAndCallAPI() {
+    // Get the current active leaf
     const activeLeaf = this.app.workspace.activeLeaf;
     if (!activeLeaf) {
-      console.error("No active leaf found.");
-      return;
+        console.error("No active leaf found.");
+        return;
     }
 
-    let content = '';
-    let leafId = activeLeaf.id;
-    console.log('leaf id', leafId);
-    selectedLeaf.subscribe((leaf) => {
-      if (leaf) {
-        content = leaf.view.containerEl.textContent ?? '';
-      }
-    });
-
-    // Check if the document already exists in the database
-    const documentExists = await db.documents.get(leafId);
-    if (documentExists) {
-      console.log('Document already exists in the database. STOP');
-      return;
+    // Ensure the leaf has an associated file (TFile object)
+    const file = activeLeaf.view.file;
+    if (!file) {
+        console.error("Active leaf does not have an associated file.");
+        return;
     }
 
-    if (content && leafId) {
-      try {
-        console.log("Calling API with content:", content);
-        const apiResponse = await callGPT4(content);
+    // Get the file path from the TFile object
+    let filePath = file.path;
+    console.log('File path:', filePath);
+
+    // Now you can use the file path as needed, for example, to read the file content
+    const fileContent = await this.app.vault.read(file);
+
+    // Proceed with your analysis using fileContent and filePath
+    if (fileContent) {
+        console.log("Analyzing content from file path:", filePath);
+        const apiResponse = await callGPT4(fileContent);
         console.log("API response:", apiResponse);
-        saveAnalysisResults(leafId, apiResponse);
-        // Here, you can call your database function and pass `leafId` along with `apiResponse`
-      } catch (error) {
-        console.error("Failed to analyze text:", error);
-      }
+        // Further processing, such as saving the analysis results
     } else {
-      console.log("The active leaf does not contain any content to analyze or leaf ID is missing.");
+        console.error("Failed to read file content.");
     }
-  }
+}
+
 
   // Define variables for unsubscription outside of onMount to ensure they are in the correct scope
   let unsubscribeLayoutChange: EventRef;

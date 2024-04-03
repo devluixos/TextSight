@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: '../' });
 
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: 'API KEY HERE',
   dangerouslyAllowBrowser: true
 });
 
