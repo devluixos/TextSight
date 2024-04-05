@@ -1,39 +1,72 @@
 @import '../styles/variables.scss';
 
+.header {
+  background-color: var(--background-secondary);
+  color: var(--text-accent);
+  padding: 1em;
+  text-align: center;
+}
+
 .tabs-container {
   display: flex;
   justify-content: space-between;
   height: 4em;
-  background-color: green;
+  background-color: var(--background-secondary);
 }
 
 .tab {
   flex: 1;
   text-align: center;
   padding: 10px;
-  color: var(--text-normal); /* Obsidian variable for text color */
+  color: var(--text-normal);
   cursor: pointer;
-  background: none; /* Remove default button background */
-  border: none; /* Remove default button border */
-  outline: none; /* Remove default focus outline, consider a custom focus style for accessibility */
+  background: none;
+  border: none;
+  outline: none;
   
-  &:hover {
-    background-color: var(--background-modifier-hover); /* Obsidian variable for hover state */
+  &:hover, &:focus {
+    background-color: var(--background-modifier-hover);
+  }
+
+  &.active {
+    background-color: var(--background-primary);
+    color: var(--text-accent);
   }
 }
 
-/* Ensure focus styles are accessible */
-.tab:focus {
-  /* Example focus style, adjust as needed */
-  box-shadow: 0 0 0 2px var(--text-normal);
-}
+.content {
+  padding: 1em;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
 
-.tab.active {
-  background-color: green; // Example active tab 
-  color: green;
-}
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1em;
 
-.p-error {
-  color: var(--text-error); /* Obsidian variable for error text color */
-}
+    label, select, button {
+      margin: 0.5em;
+    }
+  }
 
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    margin: 1em 0;
+    color: var(--text-accent);
+
+    p {
+      margin-left: 1em;
+    }
+  }
+
+  .p-error {
+    color: var(--text-error);
+  }
+
+  .database {
+    margin-top: 2em;
+  }
+}

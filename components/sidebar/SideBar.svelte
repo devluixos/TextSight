@@ -1,6 +1,8 @@
 <script lang="ts">
   import { writable, derived, get } from 'svelte/store';
   import { onMount, onDestroy } from 'svelte';
+  import { Jellyfish } from 'svelte-loading-spinners';
+
   import type { EventRef, WorkspaceLeaf } from 'obsidian';
   import { callGPT4 } from '../../nlp/nlpService';
 	import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase } from '../../sqlite/sqlHandler';
@@ -11,6 +13,31 @@
   let currentLeaf: any;
   let leafExistsInDatabase = false;
   let activeLeaf: any;
+  let isLoading = false;
+  const loadingMessages = [
+    "Training the AI...",
+    "Building the Zettelkasten...",
+    "Analyzing text patterns...",
+    "Optimizing the LLM...",
+    "Linking notes in Obsidian...",
+    "Running the NLP engine...",
+    "Generating insights...",
+    "Unleashing the power of AI...",
+    "Deciphering the Zettelkasten...",
+    "Finding connections in Obsidian...",
+    "Teaching the AI new words...",
+    "Exploring the text landscape...",
+    "Cracking the code of language...",
+    "Unraveling the mysteries of text...",
+    "Diving deep into the Zettelkasten...",
+    "Surfing the waves of AI...",
+    "Navigating the sea of text...",
+    "Journeying through the Obsidian network...",
+    "Decoding the language of AI...",
+    "Unlocking the secrets of the Zettelkasten..."
+  ];
+  let loadingMessage = '';
+  let loadingMessageInterval: any;
 
 
 
@@ -42,26 +69,29 @@
 // Function to call the API and analyze the content of the active leaf
 //--------------------------------------------------------------------
   async function analyseActiveLeafContentAndCallAPI() {
-    console.log(get(selectedLeaf));
     let content = get(selectedLeaf).view.containerEl.textContent;
     let leafId = get(selectedLeaf).view.file.path;
-    console.log('Leaf ID:', leafId);
-    console.log('Content:', content);
+    loadingMessage = "Hamster starts to run...";
+    loadingMessageInterval = setInterval(() => {
+      loadingMessage = getRandomLoadingMessage();
+    }, 3000);
+    isLoading = true;
 
     //Check if leaf exists in the database
     await checkLeaf(leafId);
     if(leafExistsInDatabase) {
-      console.log('Leaf already exists in the database: exists:', leafExistsInDatabase);
       return;
     }
 
     if (content && leafId) {
       try {
-        console.log("Calling API with content:", content);
         const apiResponse = await callGPT4(content);
-        console.log("API response:", apiResponse);
+        clearInterval(loadingMessageInterval);
+        isLoading = false;
         saveAnalysisResults(leafId, apiResponse);
       } catch (error) {
+        clearInterval(loadingMessageInterval);
+        isLoading = false;
         console.error("Failed to analyze text:", error);
       }
     } else {
@@ -72,6 +102,10 @@
   //Check if ID exists
   async function checkLeaf(leafIdParam: any) {
     leafExistsInDatabase = await checkIfLeafExistsInDatabase(leafIdParam);
+  }
+
+  function getRandomLoadingMessage() {
+    return loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
   }
 
 //-----------------------------------------------------------------------------------------------
@@ -93,34 +127,67 @@
     this.app.workspace.off('layout-change', unsubscribeLayoutChange as (...data: any) => any);
     this.app.workspace.off('active-leaf-change', unsubscribeActiveLeafChange as (...data: any) => any);
   });
+
+//----------------------------------------
+// TextSight interactions from the sidebar
+//----------------------------------------
+function onTextSightTabClick() {
+  // Check if the TextSight leaf already exists
+  let textSightLeaf = this.app.workspace.getLeavesOfType('my-visualisation')[0];
+
+  // If it doesn't exist, create a new leaf
+  if (!textSightLeaf) {
+    textSightLeaf = this.app.workspace.getLeaf();
+    textSightLeaf.setViewState({ type: 'my-visualisation' });
+  } else {
+    // If it exists, focus on it
+    this.app.workspace.setActiveLeaf(textSightLeaf);
+  }
+}
+
 </script>
 
 
 <!---------------------------------------------------------------------------
 UI for switching tabs and displaying content based on the active tab 
 ---------------------------------------------------------------------------->
+<div class="header">
+  <h1>Text Analysis</h1>
+</div>
+
 <div class="tabs-container">
-  <button class="tab" on:click={() => (activeTab = 'Analysis')}>Analysis</button>
-  <button class="tab" on:click={() => (activeTab = 'TextSight')}>TextSight</button>
+  <button class={activeTab === 'Analysis' ? 'tab active' : 'tab'} on:click={() => (activeTab = 'Analysis')}>Analysis</button>
+  <button class={activeTab === 'TextSight' ? 'tab active' : 'tab'} 
+  on:click={() => {
+    activeTab = 'TextSight';
+    onTextSightTabClick();
+    }}>TextSight</button>
 </div>
 
 {#if activeTab === 'Analysis'}
   <div class="content analysis-content">
-    Content 1
-    <button on:click={() => analyseActiveLeafContentAndCallAPI()}>Analyze Text</button>
-    <label for="leaf-select">Select a leaf:</label>
-    <select id="leaf-select" bind:value={$selectedLeaf} on:change={handleLeafSelection}>
-      {#each openLeaves as leaf (leaf)}
-        <option value={leaf}>{leaf.getDisplayText()}</option>
-      {/each}
-    </select>
+    <div class="controls">
+      <label for="leaf-select">Select a leaf:</label>
+      <select id="leaf-select" bind:value={$selectedLeaf} on:change={handleLeafSelection}>
+        {#each openLeaves as leaf (leaf)}
+          <option value={leaf}>{leaf.getDisplayText()}</option>
+        {/each}
+      </select>
+      <button on:click={() => analyseActiveLeafContentAndCallAPI()}>Analyze Text</button>
+    </div>
+    {#if isLoading}
+      <div class="loading-spinner">
+        <Jellyfish size="60" color="blue" />
+        <br />
+        <p>{loadingMessage}</p>
+      </div>
+    {/if}
     {#if leafExistsInDatabase}
       <p class="p-error">The leaf already exists in the database.</p>
-    {:else}
-      <p>The leaf does not exist in the database.</p>
     {/if}
-    <br />
-    <button on:click={ () => logDatabaseContent()}>DataBase</button>
+    <div class="database">
+      <button on:click={ () => logDatabaseContent()}>DataBase</button>
+    </div>
   </div>
 {:else if activeTab === 'TextSight'}
   <div class="content textsight-content">Content 2</div>

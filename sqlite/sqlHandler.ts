@@ -115,6 +115,8 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
     return false;
   }
 
+  
+
   export async function clearDatabase() {
     await db.transaction('rw', db.documents, db.entities, db.topics, db.keywords, db.relations, db.coreferences, db.sentiments, async () => {
       await db.documents.clear();

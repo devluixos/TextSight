@@ -5,7 +5,7 @@ const basePath = (app.vault.adapter as any).basePath
 
 //Load environment variables
 dotenv.config({
-  path: `${basePath}/.obsidian/plugins/TextSight/KEYS.env`,
+  path: `${basePath}/.obsidian/plugins/TextSight/.env`,
   debug: false
  })
 
@@ -23,7 +23,6 @@ const openai = new OpenAI({
 
 export async function callGPT4(promptText: string) {
   try {
-    console.log(process.env.OPENAI_API_KEY);
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview", // Testing this model
       messages: [{role: 'user', content: promptBuilder(promptText)}],
