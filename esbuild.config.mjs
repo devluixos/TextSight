@@ -97,7 +97,6 @@ const context = await esbuild.context({
         "@lezer/common",
         "@lezer/highlight",
         "@lezer/lr",
-        'aframe-extras',
         ...builtins
     ],
     format: "cjs",
