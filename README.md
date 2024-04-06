@@ -1,15 +1,15 @@
 ## TextSight
 ### Installation
 
-    Clone the Plugin: Clone or download the plugin to your Obsidian vault's plugins folder.
-    Enable in Obsidian: Open Obsidian, go to Settings -> Community Plugins, disable Safe Mode, and enable the plugin from the list.
+Clone the Plugin: Clone or download the plugin to your Obsidian vault's plugins folder.
+Enable in Obsidian: Open Obsidian, go to Settings -> Community Plugins, disable Safe Mode, and enable the plugin from the list.
 
 ## Configuration
 ### API Key Setup
 
-    Run npm install within the plugin directory to install dependencies.
-    Execute npm run setup to initiate the setup script.
-    When prompted, enter your OpenAI API key. This key is stored securely and used to make API calls.
+Run npm install within the plugin directory to install dependencies.
+Execute npm run setup to initiate the setup script.
+When prompted, enter your OpenAI API key. This key is stored securely and used to make API calls.
 
 ### Database
 
