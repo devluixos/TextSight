@@ -14,7 +14,7 @@ const assetLoaderPlugin = {
   name: 'assetLoader',
   setup(build) {
     // Handle specific file extensions
-    const extensions = /\.(hdr|png|jpg|glb|gltf)$/;
+    const extensions = /\.(hdr|png|jpg|glb|gltf|obj)$/;
 
     build.onResolve({ filter: extensions }, args => {
       return { path: path.resolve(args.resolveDir, args.path), namespace: 'file-to-base64' };
@@ -45,6 +45,8 @@ function determineMimeType(filePath) {
       return 'model/gltf-binary';
     case '.gltf':
       return 'model/gltf+json';
+    case '.obj':
+      return 'model/obj';
     default:
       return 'application/octet-stream';
   }
