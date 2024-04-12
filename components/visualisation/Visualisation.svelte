@@ -12,61 +12,40 @@
   import island from "./assets/3dmodels/island2.glb";
   import grassBlock from "./assets/3dmodels/grassBlock.glb";
 
-  let models = [];
-  let selectedModel = null;
+  let topicConnections = [];
 
 
   onMount(async () => {
-    //setupMouseNavigation();
-      const documents = await db.documents.toArray();
-      models = documents.map(doc => trees); // Simplified for example
+    
   });
 
+  if (!AFRAME.components['cursor-listener']) {
   AFRAME.registerComponent('cursor-listener', {
-      init: function () {
-        this.el.addEventListener('click', evt => {
-          let intersectedElement = this.el.components.raycaster.intersectedEls[0];
-          if (intersectedElement) {
-            intersectedElement.setAttribute('material', 'color', 'red');
-          }
-        });
-      }
-    });
-
-  AFRAME.registerComponent('click-interaction', {
     init: function () {
-      // Access the element
       var el = this.el;
-      
-      // Add click event listener with more detailed logging
       el.addEventListener('click', function (evt) {
-        console.log('Element clicked!');
-      });
+         console.log('Element clicked!');
+       });
     }
   });
+}
 
 
-  AFRAME.registerComponent('spawn-on-click', {
-    init: function() {
-      // Reference to the A-Frame element
-      var el = this.el;
-
-      // Click event listener
-      el.addEventListener('click', function() {
-        // Create a new entity for the grass block
-        var sceneEl = document.querySelector('a-scene');
-        var newEntity = document.createElement('a-entity');
-
-        // Set the attributes for the new entity
-        newEntity.setAttribute('geometry', {primitive: 'box', height: 1, width: 1, depth: 1});
-        newEntity.setAttribute('material', {color: '#00FF00'});
-        newEntity.setAttribute('position', {x: (Math.random() - 0.5) * 20, y: 0.5, z: (Math.random() - 0.5) * 20});
-
-        // Add the new entity to the scene
-        sceneEl.appendChild(newEntity);
-      });
-    }
-  });
+// if (!AFRAME.components['spawn-on-click']) {
+//   AFRAME.registerComponent('spawn-on-click', {
+//     init: function() {
+//       var el = this.el;
+//       el.addEventListener('click', function() {
+//         var sceneEl = document.querySelector('a-scene');
+//         var newEntity = document.createElement('a-entity');
+//         newEntity.setAttribute('geometry', {primitive: 'box', height: 1, width: 1, depth: 1});
+//         newEntity.setAttribute('material', {color: '#00FF00'});
+//         newEntity.setAttribute('position', {x: (Math.random() - 0.5) * 20, y: 0.5, z: (Math.random() - 0.5) * 20});
+//         sceneEl.appendChild(newEntity);
+//       });
+//     }
+//   });
+// }
 </script>
 
 <!-----------------------------------------------------------------
@@ -89,14 +68,14 @@ a-frame scene and all aframe elements
         normal-texture-repeat="20 20">
   </a-plane>
   <a-entity camera id="camera" look-controls="enabled: false" 
-            orbit-controls="target: 0 2 0; minDistance: 2; maxDistance: 180; initialPosition: 0 3 5; rotateSpeed: 0.5;"
-            cursor-listener raycaster="objects: .clickable"
-            class="clickable">
+        orbit-controls="target: 0 2 0; minDistance: 2; maxDistance: 180; initialPosition: 0 3 5; rotateSpeed: 0.5;"
+        cursor-listener raycaster="objects: .clickable">
   </a-entity>
-  <a-box position="0 1 -3" rotation="0 45 0" color="#4CC3D9" cursor-listener raycaster="objects: .clickable" class="clickable"></a-box>
-
   <!-- Visualisations from TextSight -->
-  <a-entity gltf-model={grassBlock} position="1 1 1" click-interaction spawn-on-click></a-entity>
+  <a-entity gltf-model={grassBlock} position="1 1 1" 
+        class="clickable"
+        cursor-listener>
+  </a-entity>
     
 </a-scene> 
 

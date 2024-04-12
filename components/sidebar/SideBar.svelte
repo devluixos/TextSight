@@ -4,8 +4,9 @@
   import { Jellyfish } from 'svelte-loading-spinners';
 
   import type { EventRef, WorkspaceLeaf } from 'obsidian';
-  import { callGPT4 } from '../../nlp/nlpService';
-	import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase } from '../../sqlite/sqlHandler';
+  import { callGPT4, constructComprehensivePromptForAllDocuments } from '../../nlp/nlpService';
+	import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase, fetchAllDocumentData } from '../../sqlite/sqlHandler';
+  import { handleAnalyseConnections } from '../visualisation/VisualisationLogic';
 
   let activeTab = 'Analysis';
   let openLeaves: any[] = [];
@@ -71,18 +72,21 @@
   async function analyseActiveLeafContentAndCallAPI() {
     let content = get(selectedLeaf).view.containerEl.textContent;
     let leafId = get(selectedLeaf).view.file.path;
-    loadingMessage = "Hamster starts to run...";
-    loadingMessageInterval = setInterval(() => {
-      loadingMessage = getRandomLoadingMessage();
-    }, 3000);
-    isLoading = true;
+    
 
     //Check if leaf exists in the database
     await checkLeaf(leafId);
     if(leafExistsInDatabase) {
       return;
     }
-
+    if(!leafExistsInDatabase) {
+      loadingMessage = "Hamster starts to run...";
+      loadingMessageInterval = setInterval(() => {
+        loadingMessage = getRandomLoadingMessage();
+      }, 3000);
+      isLoading = true;
+    }
+    
     if (content && leafId) {
       try {
         const apiResponse = await callGPT4(content);
@@ -145,6 +149,11 @@ function onTextSightTabClick() {
   }
 }
 
+
+//----------------------------------------
+// Text Sight Tab Functions
+//----------------------------------------
+
 </script>
 
 
@@ -190,7 +199,10 @@ UI for switching tabs and displaying content based on the active tab
     </div>
   </div>
 {:else if activeTab === 'TextSight'}
-  <div class="content textsight-content">Content 2</div>
+  <div class="content textsight-content">
+    <h3>Analyse the connections!</h3>
+    <button on:click={ () => handleAnalyseConnections()}>Analyse Connections</button>
+  </div>
 {/if}
 
 <style lang="scss">

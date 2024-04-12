@@ -1,4 +1,7 @@
 import Dexie from 'dexie';
+import { Document, Entity, Topic, Keyword, DocumentAnalysis, IDocumentConnection } from '../model';
+
+
 
 class TextAnalysisDB extends (Dexie as any) {
     constructor() {
@@ -7,10 +10,9 @@ class TextAnalysisDB extends (Dexie as any) {
             documents: '++id, documentId, lastAnalyzed',
             entities: '++id, documentId, text, type, weight, [documentId+text]',
             topics: '++id, documentId, name, weight, [documentId+name]',
-            keywords: '++id, documentId, keyword, importance, weight, [documentId+keyword]',
-            relations: '++id, documentId, entity1, relation, entity2, weight',
-            coreferences: '++id, documentId, text, reference, weight',
-            sentiments: '++id, documentId, overallSentiment, score, weight'
+            keywords: '++id, documentId, keyword, weight, [documentId+keyword]',
+            sentiments: '++id, documentId, overallSentiment, weight',
+            documentConnections: '++id, documentId, connectedDocumentId, connectionType, sharedAttributes, weight',
         });
     }
 }
@@ -35,14 +37,11 @@ export async function logDatabaseContent() {
     const allKeywords = await db.keywords.toArray();
     console.log("Keywords table content:", allKeywords);
   
-    const allRelations = await db.relations.toArray();
-    console.log("Relations table content:", allRelations);
-  
-    const allCoreferences = await db.coreferences.toArray();
-    console.log("Coreferences table content:", allCoreferences);
-  
     const allSentiments = await db.sentiments.toArray();
     console.log("Sentiments table content:", allSentiments);
+
+    const allConnections = await db.documentConnections.toArray();
+    console.log("Connections table content:", allConnections);
   }
 
 
@@ -80,25 +79,11 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
         }
     }
 
-    // Save Relation Extraction
-    if (analysisResponse.relationExtraction?.relations) {
-        for (const relation of analysisResponse.relationExtraction.relations) {
-            await db.relations.add({ ...relation, documentId: leafId });
-        }
-    }
-
-    // Save Coreference Resolution
-    if (analysisResponse.coreferenceResolution?.coreferences) {
-        for (const coreference of analysisResponse.coreferenceResolution.coreferences) {
-            await db.coreferences.add({ ...coreference, documentId: leafId });
-        }
-    }
-
     // Sentiment Analysis can be a single record related to the document; assuming only one sentiment analysis result per document
     if (analysisResponse.sentimentAnalysis) {
-        const { overallSentiment, score, weight } = analysisResponse.sentimentAnalysis;
+        const { overallSentiment, weight } = analysisResponse.sentimentAnalysis;
         // Assuming a sentiment table or you can choose to add these fields to the documents table
-        await db.sentiments.add({ documentId: leafId, overallSentiment, score, weight });
+        await db.sentiments.add({ documentId: leafId, overallSentiment, weight });
     }
   
     // Add similar checks and loops for topics, keywords, etc.
@@ -115,17 +100,62 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
     return false;
   }
 
-  
+  export async function saveConnectionAnalysisResults(analysisResults: any) {
+    try {
+        for (const docResult of analysisResults.analysis) {
+            const documentId = docResult.documentId;
+            const connections = docResult.connections;
+
+            for (const connectionType in connections) {
+                const connectionList = connections[connectionType];
+                for (const connection of connectionList) {
+                    // Store only the first connected document ID
+                    const firstConnectedDocumentId = connection.connectedDocumentIds[0];
+                    await db.documentConnections.add({
+                        documentId,
+                        connectedDocumentId: firstConnectedDocumentId,
+                        connectionType,
+                        sharedAttributes: connection.sharedAttributes,
+                        weight: connection.medianWeight 
+                    });
+                }
+            }
+        }
+        console.log("Connections successfully saved to the database.");
+    } catch (error) {
+        console.error("Failed to save connection analysis results:", error);
+        throw new Error("Error saving connection results to the database: " + error.message);
+    }
+}
+
+
+  export async function fetchAllDocumentData(): Promise<DocumentAnalysis[]> {
+    const documents: Document[] = await db.documents.toArray();
+    const entities: Entity[] = await db.entities.toArray();
+    const topics: Topic[] = await db.topics.toArray();
+    const keywords: Keyword[] = await db.keywords.toArray();
+
+    // Organize data by document
+    const documentAnalysis: DocumentAnalysis[] = documents.map(doc => ({
+        id: doc.documentId,
+        keywords: keywords.filter((k: Keyword) => k.documentId === doc.documentId),
+        entities: entities.filter((e: Entity) => e.documentId === doc.documentId),
+        topics: topics.filter((t: Topic) => t.documentId === doc.documentId)
+    }));
+
+    console.log('Document analysis fetched:', documentAnalysis);
+    return documentAnalysis;
+}
+
 
   export async function clearDatabase() {
-    await db.transaction('rw', db.documents, db.entities, db.topics, db.keywords, db.relations, db.coreferences, db.sentiments, async () => {
+    await db.transaction('rw', db.documents, db.entities, db.topics, db.keywords, db.sentiments, db.documentConnections, async () => {
       await db.documents.clear();
       await db.entities.clear();
       await db.topics.clear();
       await db.keywords.clear();
-      await db.relations.clear();
-      await db.coreferences.clear();
       await db.sentiments.clear();
+      await db.documentConnections.clear();
     });
     console.log('Database cleared');
   }
