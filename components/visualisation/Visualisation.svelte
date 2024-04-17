@@ -1,18 +1,16 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import { db } from '../../sqlite/sqlHandler';
+  import { onMount } from 'svelte';
 
   //All aframe imports
   import "aframe";
   import "aframe-orbit-controls";
-  import { fetchAndGroupTopicConnections, generateTopicIslands } from "./VisualisationLogic";
-  import { showInfoPanel } from"./InfoPanelLogic";
+  import { generateTopicIslands } from "./VisualisationLogic";
+  import "./InfoPanelLogic";
 
   //models
   import skyboxImage from "./assets/skyboxes/sky_test.glb";
   import grassBlock from "./assets/3dmodels/grassBlock.glb";
 
-  let topicConnections = [];
   let islands = [];
   let info = {
     title: "My Title",
@@ -23,7 +21,6 @@
 
 
   onMount(async () => {
-    var test = fetchAndGroupTopicConnections();
     islands = await generateTopicIslands();
   });
 
@@ -33,7 +30,6 @@
         this.el.addEventListener('click', evt => {
           const position = this.el.object3D.position.clone();
           const data = JSON.parse(this.el.getAttribute('data-info'));
-          showInfoPanel(data, position);
         });
       }
     });
@@ -84,9 +80,9 @@ a-frame scene and all aframe elements
   <!-- Visualisations from TextSight -->
   <a-entity gltf-model={grassBlock} position="1 1 1" 
         class="clickable"
-        data-info="{JSON.stringify({ title: 'My Title', description: 'This is a description.' })}"
         cursor-listener
-        info-panel={infoString}>
+        info-panel
+        data-info={infoString}>
   </a-entity>
 
 
@@ -99,7 +95,8 @@ a-frame scene and all aframe elements
             color="#ffcc00"
             class="clickable"
             cursor-listener
-            info-panel={infoString}>
+            info-panel 
+            data-info={model.dataInfo}>
         </a-entity>
       {/each}
     </a-entity>

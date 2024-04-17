@@ -43,6 +43,7 @@ export async function fetchAndGroupTopicConnections(): Promise<{ [key: string]: 
       }
   });
 
+  console.log('Topic groups fetched:', topicGroups);
   return topicGroups;
 }
 
@@ -64,28 +65,33 @@ const layoutPositions = (count: number): { x: number, z: number }[] => {
 };
 
 
+// Assuming imports and fetchAndGroupTopicConnections are defined correctly
 export async function generateTopicIslands(): Promise<any[]> {
   const topicGroups = await fetchAndGroupTopicConnections();
   let islands: any = [];
-  const baseRadius = 5; // Reduce the base radius for a tighter circle
-  const angleIncrement = 2 * Math.PI / Object.keys(topicGroups).length; // Angle between each island
+  const baseRadius = 5; // Adjust base radius for layout
+  const angleIncrement = 2 * Math.PI / Object.keys(topicGroups).length;
 
   let currentAngle = 0;
-  Object.keys(topicGroups).forEach((topic, index) => {
+  Object.keys(topicGroups).forEach(topic => {
     const connections = topicGroups[topic];
-    const numBlocks = connections.length;
+    const numBlocks = Math.max(MIN_ISLAND_SIZE * MIN_ISLAND_SIZE, connections.length);
     const gridSize = Math.max(MIN_ISLAND_SIZE, Math.ceil(Math.sqrt(numBlocks)));
-    const positions = layoutPositions(gridSize * gridSize); // Ensure square grid
+    const positions = layoutPositions(gridSize * gridSize);
 
-    // Adjust the radius increment based on the grid size to keep islands closer
-    const radius = baseRadius + gridSize * 1.1; // Smaller multiplier for radius increment
+    const radius = baseRadius + (gridSize * 0.5);
     const xCenter = radius * Math.cos(currentAngle);
     const zCenter = radius * Math.sin(currentAngle);
-    const models = positions.map(pos => ({
-      model: 'path/to/grassBlock.glb',  // Ensure correct path
+
+    const models = positions.map((pos, idx) => ({
+      model: 'path/to/grassBlock.glb',
       x: pos.x + xCenter,
       z: pos.z + zCenter,
-      scale: 1  // Adjust scale if needed
+      scale: 1.5,
+      dataInfo: JSON.stringify({
+        title: topic,
+        description: connections[idx % connections.length].sharedAttributes.join(", ")
+      })
     }));
 
     islands.push({ topic, models });
