@@ -51,38 +51,45 @@ const BLOCK_SIZE = 1;  // Assuming each block is 1x1 units
 const MIN_ISLAND_SIZE = 2;  // Minimum size of each side of an island
 
 
-// Function to generate grid positions for a given number of blocks
 const layoutPositions = (count: number): { x: number, z: number }[] => {
   let positions = [];
-  let gridSize = Math.max(MIN_ISLAND_SIZE, Math.ceil(Math.sqrt(count)));
-
-  for (let i = 0; i < count; i++) {
+  let gridSize = Math.ceil(Math.sqrt(count));
+  gridSize = Math.max(MIN_ISLAND_SIZE, gridSize); // Ensure at least a 2x2 grid
+  for (let i = 0; i < gridSize * gridSize; i++) { // Fill the whole grid square
     let x = (i % gridSize) * BLOCK_SIZE;
     let z = Math.floor(i / gridSize) * BLOCK_SIZE;
     positions.push({ x, z });
   }
-
   return positions;
 };
 
-// Function to generate islands with no gaps between models
+
 export async function generateTopicIslands(): Promise<any[]> {
   const topicGroups = await fetchAndGroupTopicConnections();
   let islands: any = [];
-  let xOffset = 0;  // Offset to prevent overlapping of islands
+  const baseRadius = 5; // Reduce the base radius for a tighter circle
+  const angleIncrement = 2 * Math.PI / Object.keys(topicGroups).length; // Angle between each island
 
-  Object.keys(topicGroups).forEach(topic => {
+  let currentAngle = 0;
+  Object.keys(topicGroups).forEach((topic, index) => {
     const connections = topicGroups[topic];
-    const numBlocks = Math.max(MIN_ISLAND_SIZE * MIN_ISLAND_SIZE, connections.length);
-    const positions = layoutPositions(numBlocks);
+    const numBlocks = connections.length;
+    const gridSize = Math.max(MIN_ISLAND_SIZE, Math.ceil(Math.sqrt(numBlocks)));
+    const positions = layoutPositions(gridSize * gridSize); // Ensure square grid
+
+    // Adjust the radius increment based on the grid size to keep islands closer
+    const radius = baseRadius + gridSize * 1.1; // Smaller multiplier for radius increment
+    const xCenter = radius * Math.cos(currentAngle);
+    const zCenter = radius * Math.sin(currentAngle);
     const models = positions.map(pos => ({
       model: 'path/to/grassBlock.glb',  // Ensure correct path
-      x: pos.x + xOffset,
-      z: pos.z
+      x: pos.x + xCenter,
+      z: pos.z + zCenter,
+      scale: 1  // Adjust scale if needed
     }));
 
     islands.push({ topic, models });
-    xOffset += Math.sqrt(numBlocks) * BLOCK_SIZE;  // Move xOffset for the next island
+    currentAngle += angleIncrement;
   });
 
   return islands;

@@ -10,10 +10,6 @@
 
   //models
   import skyboxImage from "./assets/skyboxes/sky_test.glb";
-  import trees from "./assets/3dmodels/trees.glb";
-  import GroundGras from "./assets/textures/GroundGrassGreen002_COL_2K.jpg";
-  import GroundTexture from "./assets/textures/GroundGrassGreen002_NRM_2K.jpg";
-  import island from "./assets/3dmodels/island2.glb";
   import grassBlock from "./assets/3dmodels/grassBlock.glb";
 
   let topicConnections = [];
@@ -30,24 +26,6 @@
     var test = fetchAndGroupTopicConnections();
     islands = await generateTopicIslands();
   });
-
-  // Function to create visual representations for topics
-  function createTopicIslands(topics) {
-    Object.keys(topics).forEach((topic, index) => {
-      const entities = topics[topic];
-      const x = index * 5; // Spacing out each "island"
-      const z = 0;
-      entities.forEach((entity, idx) => {
-        const el = document.createElement('a-box');
-        el.setAttribute('position', `${x} 0 ${z + idx * 0.5}`);
-        el.setAttribute('depth', '0.5');
-        el.setAttribute('height', '0.5');
-        el.setAttribute('width', '0.5');
-        el.setAttribute('color', '#ffcc00');
-        sceneEl.appendChild(el);
-      });
-    });
-  }
 
   if (!AFRAME.components['cursor-listener']) {
     AFRAME.registerComponent('cursor-listener', {
@@ -107,17 +85,25 @@ a-frame scene and all aframe elements
   <a-entity gltf-model={grassBlock} position="1 1 1" 
         class="clickable"
         data-info="{JSON.stringify({ title: 'My Title', description: 'This is a description.' })}"
-        cursor-listener>
+        cursor-listener
+        info-panel={infoString}>
   </a-entity>
 
 
-  {#each islands as island, index}
-    <a-entity position={`${index * 5} 0 0`}>
+  {#each islands as island}
+    <a-entity>
       {#each island.models as model}
-        <a-box gltf-model={grassBlock} position={`${model.x} 0 ${model.z}`} scale="1.5 1.5 1.5" color="#ffcc00"></a-box>
+        <a-entity gltf-model={grassBlock} 
+            position={`${model.x} 0 ${model.z}`} 
+            scale="1.5 1.5 1.5" 
+            color="#ffcc00"
+            class="clickable"
+            cursor-listener
+            info-panel={infoString}>
+        </a-entity>
       {/each}
     </a-entity>
-  {/each} 
+  {/each}
     
 </a-scene> 
 
