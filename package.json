@@ -14,11 +14,13 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@tsconfig/svelte": "^5.0.2",
+		"@types/aframe": "^1.2.6",
 		"@types/better-sqlite3": "^7.6.9",
 		"@types/node": "^16.11.6",
 		"@types/prompt-sync": "^4.2.3",
 		"@types/react": "^18.2.55",
 		"@types/react-dom": "^18.2.18",
+		"@types/three": "^0.163.0",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
 		"autoprefixer": "^10.4.17",
@@ -43,6 +45,7 @@
 		"prompt-sync": "^4.2.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"svelte-loading-spinners": "^0.3.6"
+		"svelte-loading-spinners": "^0.3.6",
+		"three": "^0.163.0"
 	}
 }

@@ -65,3 +65,17 @@ export interface DocumentConnection {
     analysis: DocumentConnection[];
   }
   
+
+/**
+ * Visualisation Logic Interface
+ */
+export interface TopicConnection {
+    documentId: string;
+    connectedDocumentId: string;
+    sharedAttributes: string[];
+    weight?: number;
+  }
+
+export interface TopicGroup {
+    [key: string]: TopicConnection[];
+}
