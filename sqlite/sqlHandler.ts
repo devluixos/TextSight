@@ -41,6 +41,8 @@ export async function logDatabaseContent() {
     const allConnections = await db.documentConnections.toArray();
     console.log("Connections table content:", allConnections);
 
+    console.log(fetchDetailedDocumentData());
+
   }
 
 
@@ -159,17 +161,19 @@ export async function fetchDetailedDocumentData(): Promise<any[]> {
 
       // Aggregate all related data into a single object for this document
       detailedDocuments.push({
-          ...document,
-          entities,
-          topics,
-          keywords,
-          sentiments,
-          connections: connections.map((conn: { connectedDocumentId: any; }) => ({
+        ...document,
+        entities,
+        topics,
+        keywords,
+        sentiments,
+        connections: await Promise.all(connections.map(async (conn: { connectedDocumentId: any; }) => {
+            const connectedDocument = await db.documents.get(conn.connectedDocumentId);
+            return {
               ...conn,
-              // Optionally include detailed info about the connected document
-              connectedDocument: db.documents.get(conn.connectedDocumentId)
-          }))
-      });
+              connectedDocument
+            };
+        }))
+    });
   }
   return detailedDocuments;
 }

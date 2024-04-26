@@ -4,7 +4,7 @@
   //All aframe imports
   import "aframe";
   import "aframe-orbit-controls";
-  import { generateDocumentIslands } from "./VisualisationLogic";
+  import { generateDocumentIslandsAndBridges } from "./VisualisationLogic";
   import "./InfoPanelLogic";
 
   //models
@@ -12,16 +12,14 @@
   import grassBlock from "./assets/3dmodels/grassBlock.glb";
 
   let islands = [];
-  let info = {
-    title: "My Title",
-    description: "This is a description."
-  };
-
-  let infoString = JSON.stringify(info);
-
+  let bridges = [];
 
   onMount(async () => {
-    islands = await generateDocumentIslands();
+    const result = await generateDocumentIslandsAndBridges();
+    islands = result.islands;
+    bridges = result.bridges;
+    console.log('Islands: ', islands);
+    console.log('Bridges: ', bridges);
   });
 
   if (!AFRAME.components['cursor-listener']) {
@@ -35,23 +33,6 @@
     });
   }
 
-
-
-// if (!AFRAME.components['spawn-on-click']) {
-//   AFRAME.registerComponent('spawn-on-click', {
-//     init: function() {
-//       var el = this.el;
-//       el.addEventListener('click', function() {
-//         var sceneEl = document.querySelector('a-scene');
-//         var newEntity = document.createElement('a-entity');
-//         newEntity.setAttribute('geometry', {primitive: 'box', height: 1, width: 1, depth: 1});
-//         newEntity.setAttribute('material', {color: '#00FF00'});
-//         newEntity.setAttribute('position', {x: (Math.random() - 0.5) * 20, y: 0.5, z: (Math.random() - 0.5) * 20});
-//         sceneEl.appendChild(newEntity);
-//       });
-//     }
-//   });
-// }
 </script>
 
 <!-----------------------------------------------------------------
@@ -71,14 +52,7 @@ a-frame scene and all aframe elements
         orbit-controls="target: 0 2 0; minDistance: 2; maxDistance: 180; initialPosition: 0 3 5; rotateSpeed: 0.5;"
         cursor-listener raycaster="objects: .clickable">
   </a-entity>
-  <!-- Visualisations from TextSight -->
-  <a-entity gltf-model={grassBlock} position="1 1 1" 
-        class="clickable"
-        cursor-listener
-        info-panel
-        data-info={infoString}>
-  </a-entity>
-  
+ 
 
   {#each islands as island}
     <a-entity>
@@ -94,6 +68,10 @@ a-frame scene and all aframe elements
         </a-entity>
       {/each}
     </a-entity>
+  {/each}
+  <!-- Render bridges -->
+  {#each bridges as bridge (bridge.start.x + ',' + bridge.start.z + '-' + bridge.end.x + ',' + bridge.end.z)}
+    <a-entity line="start: {bridge.start.x} {bridge.start.y} {bridge.start.z}; end: {bridge.end.x} {bridge.end.y} {bridge.end.z}; color: red"></a-entity>
   {/each}
 
 </a-scene> 
