@@ -1,6 +1,5 @@
 import Dexie from 'dexie';
-import { Document, Entity, Topic, Keyword, DocumentAnalysis, IDocumentConnection } from '../model';
-
+import { Document, Entity, Topic, Keyword, DocumentAnalysis, NodeModel } from '../model';
 
 
 class TextAnalysisDB extends (Dexie as any) {
@@ -41,6 +40,7 @@ export async function logDatabaseContent() {
 
     const allConnections = await db.documentConnections.toArray();
     console.log("Connections table content:", allConnections);
+
   }
 
 
@@ -146,6 +146,33 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
     return documentAnalysis;
 }
 
+export async function fetchDetailedDocumentData(): Promise<any[]> {
+  const documents = await db.documents.toArray();
+  const detailedDocuments = [];
+
+  for (const document of documents) {
+      const entities = await db.entities.where({ documentId: document.documentId }).toArray();
+      const topics = await db.topics.where({ documentId: document.documentId }).toArray();
+      const keywords = await db.keywords.where({ documentId: document.documentId }).toArray();
+      const sentiments = await db.sentiments.where({ documentId: document.documentId }).toArray();
+      const connections = await db.documentConnections.where({ documentId: document.documentId }).toArray();
+
+      // Aggregate all related data into a single object for this document
+      detailedDocuments.push({
+          ...document,
+          entities,
+          topics,
+          keywords,
+          sentiments,
+          connections: connections.map((conn: { connectedDocumentId: any; }) => ({
+              ...conn,
+              // Optionally include detailed info about the connected document
+              connectedDocument: db.documents.get(conn.connectedDocumentId)
+          }))
+      });
+  }
+  return detailedDocuments;
+}
 
   export async function clearDatabase() {
     await db.transaction('rw', db.documents, db.entities, db.topics, db.keywords, db.sentiments, db.documentConnections, async () => {

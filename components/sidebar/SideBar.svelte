@@ -6,7 +6,7 @@
   import type { EventRef, WorkspaceLeaf } from 'obsidian';
   import { callGPT4, constructComprehensivePromptForAllDocuments } from '../../nlp/nlpService';
 	import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase, fetchAllDocumentData } from '../../sqlite/sqlHandler';
-  import { handleAnalyseConnections } from '../visualisation/VisualisationLogic';
+  import { handleAnalyseConnections } from '../../nlp/nlpService';
 
   let activeTab = 'Analysis';
   let openLeaves: any[] = [];

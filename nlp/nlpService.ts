@@ -2,6 +2,8 @@ import OpenAI from 'openai';
 import * as dotenv from 'dotenv';
 import { DocumentAnalysis, Entity, Keyword, Topic } from 'model';
 import { fetchAllDocumentData } from 'sqlite/sqlHandler';
+import { saveConnectionAnalysisResults } from 'sqlite/sqlHandler';
+import { writable } from 'svelte/store';
 
 /**
  * GPT API SETUP
@@ -156,5 +158,27 @@ export async function callGPT4forConnections() {
     return response.choices[0].message.content;
   } catch (error) {
     console.error(error);
+  }
+}
+
+
+export const isConnectionAnalysisLoading = writable(false);
+export const connectionAnalysisErrorMessage = writable('');
+/**
+ * Handle the analysis of connections
+ */
+export async function handleAnalyseConnections() {
+  isConnectionAnalysisLoading.set(true);
+  connectionAnalysisErrorMessage.set('');
+  try {
+    const results = await callGPT4forConnections();
+    const parsedResults = typeof results === 'string' ? JSON.parse(results) : null;
+    await saveConnectionAnalysisResults(parsedResults);
+    console.log("Analysis processed and saved successfully.");
+  } catch (error) {
+    console.error("Error during text connection analysis:", error);
+    connectionAnalysisErrorMessage.set("Failed to process and save analysis: " + error.message);
+  } finally {
+    isConnectionAnalysisLoading.set(false);
   }
 }

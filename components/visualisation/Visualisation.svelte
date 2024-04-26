@@ -4,7 +4,7 @@
   //All aframe imports
   import "aframe";
   import "aframe-orbit-controls";
-  import { generateTopicIslands } from "./VisualisationLogic";
+  import { generateDocumentIslands } from "./VisualisationLogic";
   import "./InfoPanelLogic";
 
   //models
@@ -21,7 +21,7 @@
 
 
   onMount(async () => {
-    islands = await generateTopicIslands();
+    islands = await generateDocumentIslands();
   });
 
   if (!AFRAME.components['cursor-listener']) {
@@ -67,12 +67,6 @@ a-frame scene and all aframe elements
 
   <!-- Base scene structure -->
   <a-sky gltf-model={skyboxImage} ></a-sky>
-  <!--a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20"
-        src={GroundGras}
-        material="repeat: 20 20"
-        normal-map={GroundTexture}
-        normal-texture-repeat="20 20">
-  </a-plane-->
   <a-entity camera id="camera" look-controls="enabled: false" 
         orbit-controls="target: 0 2 0; minDistance: 2; maxDistance: 180; initialPosition: 0 3 5; rotateSpeed: 0.5;"
         cursor-listener raycaster="objects: .clickable">
@@ -84,24 +78,24 @@ a-frame scene and all aframe elements
         info-panel
         data-info={infoString}>
   </a-entity>
-
+  
 
   {#each islands as island}
     <a-entity>
       {#each island.models as model}
-        <a-entity gltf-model={grassBlock} 
-            position={`${model.x} 0 ${model.z}`} 
-            scale="1.5 1.5 1.5" 
-            color="#ffcc00"
-            class="clickable"
-            cursor-listener
-            info-panel 
-            data-info={model.dataInfo}>
+        <a-entity
+          gltf-model={grassBlock}
+          position={`${model.x} 0 ${model.z}`}
+          scale="1.5 1.5 1.5"
+          color="#ffcc00"
+          class="clickable"
+          cursor-listener
+          data-info={model.dataInfo}>
         </a-entity>
       {/each}
     </a-entity>
   {/each}
-    
+
 </a-scene> 
 
 <style>
@@ -111,14 +105,5 @@ a-frame scene and all aframe elements
       height: 100%; 
     }
 
-    #info-panel {
-      position: fixed; /* Use fixed to keep it above all content */
-      z-index: 999;
-      background: white;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      display: none; /* Start hidden */
-    }
 
 </style>

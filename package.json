@@ -36,6 +36,7 @@
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
+		"@greenelab/hclust": "^0.0.1",
 		"@mlc-ai/web-llm": "^0.2.23",
 		"aframe": "^1.5.0",
 		"aframe-orbit-controls": "^1.3.2",

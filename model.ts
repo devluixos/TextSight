@@ -45,6 +45,18 @@ export interface IDocumentConnection {
     sharedAttributes: string[];
 }
 
+export class NodeModel {
+    id: string;
+    documentData: any; // Includes topics, entities, keywords, sentiments
+    connections: any[];
+
+    constructor(id: string, documentData: any, connections: any[]) {
+        this.id = id;
+        this.documentData = documentData;
+        this.connections = connections;
+    }
+}
+
 /**
  * Connection Analysis Interfaces
  */
