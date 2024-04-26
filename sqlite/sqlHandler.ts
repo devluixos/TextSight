@@ -21,7 +21,6 @@ export const db = new TextAnalysisDB();
 
 export async function initializeDatabase() {
     console.log('Database initialized'); 
-    //clearDatabase().catch(e => console.error(e));
 }
 
 export async function logDatabaseContent() {
