@@ -9,64 +9,32 @@
 
 .tabs-container {
   display: flex;
-  justify-content: space-between;
-  height: 4em;
-  background-color: var(--background-secondary);
+  justify-content: space-evenly;
+  margin-bottom: 10px;
+  border-bottom: 2px solid var(--color-purple);
 }
 
 .tab {
-  flex: 1;
-  text-align: center;
-  padding: 10px;
-  color: var(--text-normal);
-  cursor: pointer;
   background: none;
   border: none;
-  outline: none;
-  
-  &:hover, &:focus {
-    background-color: var(--background-modifier-hover);
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  flex-grow: 1;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  position: relative;
+  margin: 0;
+  font-size: 1.2em; // Increase the font size
+  color: var(--color-base-60); // Grey out the inactive tab
+  transition: color .3s, border-bottom .3s; // Add a transition for color and bottom border
+
+  &:focus {
+    outline: none; // Remove the focus outline
   }
 
   &.active {
-    background-color: var(--background-primary);
-    color: var(--text-accent);
-  }
-}
-
-.content {
-  padding: 1em;
-  background-color: var(--background-primary);
-  color: var(--text-normal);
-
-  .controls {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1em;
-
-    label, select, button {
-      margin: 0.5em;
-    }
-  }
-
-  .loading-spinner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60px;
-    margin: 1em 0;
-    color: var(--text-accent);
-
-    p {
-      margin-left: 1em;
-    }
-  }
-
-  .p-error {
-    color: var(--text-error);
-  }
-
-  .database {
-    margin-top: 2em;
+    color: #000; // Change the color of the active tab
+    border-bottom: 2px solid var(--color-base-100); // Change the bottom border of the active tab
   }
 }
