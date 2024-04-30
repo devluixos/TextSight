@@ -14,7 +14,7 @@ const assetLoaderPlugin = {
   name: 'assetLoader',
   setup(build) {
     // Handle specific file extensions
-    const extensions = /\.(hdr|png|jpg|glb|gltf|obj)$/;
+    const extensions = /\.(hdr|png|jpg|glb|gltf|obj|svg)$/;
 
     build.onResolve({ filter: extensions }, args => {
       return { path: path.resolve(args.resolveDir, args.path), namespace: 'file-to-base64' };
@@ -39,6 +39,8 @@ function determineMimeType(filePath) {
       return 'image/vnd.radiance';
     case '.png':
       return 'image/png';
+    case '.svg':
+      return 'image/svg+xml';
     case '.jpg': case '.jpeg':
       return 'image/jpeg';
     case '.glb':

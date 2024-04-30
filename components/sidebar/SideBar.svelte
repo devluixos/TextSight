@@ -8,6 +8,8 @@
 	import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase, fetchAllDocumentData } from '../../sqlite/sqlHandler';
   import { handleAnalyseConnections } from '../../nlp/nlpService';
 
+  import testimage from '../../assets/TextSightIcon_Black.png';
+
   let activeTab = 'Analysis';
   let openLeaves: any[] = [];
   let selectedLeaf = writable<any | null>(null);

@@ -13,6 +13,7 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@svgr/webpack": "^8.1.0",
 		"@tsconfig/svelte": "^5.0.2",
 		"@types/aframe": "^1.2.6",
 		"@types/better-sqlite3": "^7.6.9",

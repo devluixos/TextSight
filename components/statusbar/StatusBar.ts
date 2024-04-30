@@ -34,16 +34,19 @@ export class StatusBar {
     private addSidebar() {
         // Ensure no sidebar of the same type is already open
         if (this.plugin.app.workspace.getLeavesOfType('sidebar').length === 0) {
-            this.plugin.app.workspace.getRightLeaf(false).setViewState({
-                type: 'my-sidebar',
-                active: true,
-            }).then(() => {
-                // Focus on the new sidebar if needed
-                const newLeaf = this.plugin.app.workspace.getLeavesOfType('my-sidebar')[0];
-                if (newLeaf) {
-                    this.plugin.app.workspace.setActiveLeaf(newLeaf, { focus: false }); // false to not focus in edit mode
-                }
-            });
+            const rightLeaf = this.plugin.app.workspace.getRightLeaf(false);
+            if (rightLeaf) {
+                rightLeaf.setViewState({
+                    type: 'my-sidebar',
+                    active: true,
+                }).then(() => {
+                    // Focus on the new sidebar if needed
+                    const newLeaf = this.plugin.app.workspace.getLeavesOfType('my-sidebar')[0];
+                    if (newLeaf) {
+                        this.plugin.app.workspace.setActiveLeaf(newLeaf, { focus: false }); // false to not focus in edit mode
+                    }
+                });
+            }
         }
     }
 

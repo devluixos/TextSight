@@ -17,7 +17,7 @@ export class Sidebar extends ItemView {
     }
 
     getIcon(): string {
-        return 'document';
+        return 'textSightIcon';
     }
 
     async onOpen() {

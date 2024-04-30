@@ -10,6 +10,7 @@
   //models
   import skyboxImage from "./assets/skyboxes/sky_test.glb";
   import grassBlock from "./assets/3dmodels/grassBlock.glb";
+  import test from "../../assets/TextSightIcon_Black.png"
 
   let islands = [];
   let bridges = [];
