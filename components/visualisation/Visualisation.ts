@@ -1,9 +1,10 @@
 // Visualization.ts
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import Component from './Visualisation.svelte';
+import Test from './Graph.svelte';
 
 export class Visualisation extends ItemView {
-    component: Component;
+    test: Test;
 
     constructor(leaf: WorkspaceLeaf) {
         super(leaf);
@@ -22,12 +23,12 @@ export class Visualisation extends ItemView {
     }
 
     async onOpen() {
-        this.component = new Component({
+        this.test = new Test({
             target: this.contentEl,
         });
     }
 
     async onClose() {
-        this.component.$destroy();
+        this.test.$destroy();
     }
 }
