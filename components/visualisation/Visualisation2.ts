@@ -1,56 +1,50 @@
 import { writable } from 'svelte/store';
-import { db } from '../../sqlite/sqlHandler';  // Ensure the import path is correct
+import { db } from '../../sqlite/sqlHandler';
 
 export const visualizationData = writable<any[]>([]);
 
-interface Node {
-  id: string;
-  x: number;
-  y: number;
-  z: number;
-  connections: string[];
-}
-
-// Function to calculate initial positions using a radial layout
-function calculatePositions(nodes: Node[], center: { x: number; y: number; }, radiusBase: number, radiusIncrement: number): Node[] {
-  return nodes.map((node, index) => {
-    const angle = (index / nodes.length) * 2 * Math.PI;  // Distribute nodes evenly around the circle
-    const radius = radiusBase + (node.connections.length * radiusIncrement);  // Closer to the center if more connections
-    return {
-      ...node,
-      x: center.x + radius * Math.cos(angle),
-      y: 0,  // Keep y constant if not using 3D vertical positioning
-      z: center.y + radius * Math.sin(angle)
-    };
-  });
-}
-
-// Fetching data and processing nodes
-async function fetchData() {
+export async function fetchData() {
     try {
         const documents = await db.documents.toArray();
         const connections = await db.documentConnections.toArray();
 
-        // Map connections to documents
-        const nodes = documents.map((doc: { documentId: any; }) => ({
+        const nodes = documents.map((doc: { documentId: any; }, index: any) => ({
             id: doc.documentId,
-            x: 0,  // Initial x, y, z positions are set in calculatePositions
-            y: 0,
-            z: 0,
             connections: connections.filter((conn: { documentId: any; }) => conn.documentId === doc.documentId).map((conn: { connectedDocumentId: any; }) => conn.connectedDocumentId),
         }));
 
-        // Parameters for layout
-        const center = { x: 0, y: 0 };
-        const radiusBase = 5;  // Starting radius
-        const radiusIncrement = 3;  // Increment per connection
-
-        // Calculate and adjust positions
-        const positionedNodes = calculatePositions(nodes, center, radiusBase, radiusIncrement);
+        const positionedNodes = positionDocuments(nodes);
         visualizationData.set(positionedNodes);
     } catch (error) {
         console.error("Failed to fetch or process data:", error);
     }
+}
+
+function positionDocuments(documents: any[]) {
+    let angleIncrement = 360 / documents.length;
+    let radius = 5;  // Base radius which can be adjusted based on the size of the visualization
+
+    return documents.map((doc: { connections: any[]; id: any; }, index: number) => {
+        let connectedDocs = doc.connections.map((id: any) => documents.findIndex((d: { id: any; }) => d.id === id));
+        let averageAngle = connectedDocs.reduce((acc: number, i: number) => acc + (i * angleIncrement), 0) / connectedDocs.length;
+
+        if (connectedDocs.length === 0) {
+            averageAngle = index * angleIncrement;
+        }
+
+        // Convert degrees to radians for x and z calculations
+        let radian = (averageAngle * Math.PI) / 180;
+        let x = radius * Math.cos(radian);
+        let z = radius * Math.sin(radian);
+
+        return {
+            id: doc.id,
+            x: x,
+            y: 0,
+            z: z,
+            connections: doc.connections,
+        };
+    });
 }
 
 fetchData();
