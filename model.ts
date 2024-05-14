@@ -91,3 +91,15 @@ export interface TopicConnection {
 export interface TopicGroup {
     [key: string]: TopicConnection[];
 }
+
+export interface DocumentDetail {
+    documentId: string;
+    lastAnalyzed: Date;
+    entities: any[];
+    topics: any[];
+    keywords: any[];
+    sentiments: any[];
+    connections: { connectedDocumentId: string }[];
+    position?: { x: number, y: number, z: number };
+    force?: { x: number, y: number, z: number };
+}

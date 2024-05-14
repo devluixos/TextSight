@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { Document, Entity, Topic, Keyword, DocumentAnalysis, NodeModel } from '../model';
+import { Document, Entity, Topic, Keyword, DocumentAnalysis, NodeModel, DocumentDetail } from '../model';
 
 
 class TextAnalysisDB extends (Dexie as any) {
@@ -148,9 +148,9 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
     return documentAnalysis;
 }
 
-export async function fetchDetailedDocumentData(): Promise<any[]> {
+export async function fetchDetailedDocumentData(): Promise<DocumentDetail[]> {
   const documents = await db.documents.toArray();
-  const detailedDocuments = [];
+  const detailedDocuments: DocumentDetail[] = [];
 
   for (const document of documents) {
       const entities = await db.entities.where({ documentId: document.documentId }).toArray();
@@ -161,22 +161,20 @@ export async function fetchDetailedDocumentData(): Promise<any[]> {
 
       // Aggregate all related data into a single object for this document
       detailedDocuments.push({
-        ...document,
-        entities,
-        topics,
-        keywords,
-        sentiments,
-        connections: await Promise.all(connections.map(async (conn: { connectedDocumentId: any; }) => {
-            const connectedDocument = await db.documents.get(conn.connectedDocumentId);
-            return {
+          ...document,
+          entities,
+          topics,
+          keywords,
+          sentiments,
+          connections: connections.map((conn: { connectedDocumentId: any; }) => ({
               ...conn,
-              connectedDocument
-            };
-        }))
-    });
+              connectedDocument: documents.find((d: { documentId: any; }) => d.documentId === conn.connectedDocumentId) || null
+          }))
+      });
   }
   return detailedDocuments;
 }
+
 
   export async function clearDatabase() {
     await db.transaction('rw', db.documents, db.entities, db.topics, db.keywords, db.sentiments, db.documentConnections, async () => {

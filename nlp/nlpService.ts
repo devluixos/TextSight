@@ -104,7 +104,8 @@ export async function constructComprehensivePromptForAllDocuments(): Promise<str
   let prompt = `Analyze thematic connections based on keywords, entities, and topics between the following documents, 
       noting even slight variations in terms. Consider the weights of each attribute to assess the strength of each connection.
       Provide the analysis in JSON format, listing each document's connections including document IDs and shared attributes 
-      and the median weight of each connection based on the weights for connections identified.\n`;
+      and the median weight of each connection based on the weights for connections identified.
+      Ensure that connections are bidirectional, i.e., if Document A is connected to Document B, Document B should also be connected to Document A.\n`;
 
   documentsAnalysis.forEach((doc, index) => {
     prompt += `Document ${index + 1} (${doc.id}):\n`;
@@ -122,17 +123,17 @@ export async function constructComprehensivePromptForAllDocuments(): Promise<str
         keywords: [{
           connectedDocumentIds: ["exampleDocumentId2"],
           sharedAttributes: ["exampleKeyword"],
-          medianWeight: 7.5
+          medianWeight: 0.5
         }],
         entities: [{
           connectedDocumentIds: ["exampleDocumentId2"],
           sharedAttributes: ["exampleEntity"],
-          medianWeight: 7.5
+          medianWeight: 0.5
         }],
         topics: [{
           connectedDocumentIds: ["exampleDocumentId2"],
           sharedAttributes: ["exampleTopic"],
-          medianWeight: 7.5
+          medianWeight: 0.5
         }]
       }
     }]

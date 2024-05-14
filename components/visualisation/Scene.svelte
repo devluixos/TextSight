@@ -1,88 +1,66 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { T } from '@threlte/core';
+    import { Canvas, T } from '@threlte/core';
     import { OrbitControls } from '@threlte/extras';
-    import { visualizationData } from './Visualisation2';
-    import { spring } from 'svelte/motion';
+    import { improvedClusteredLayout } from './DocumentDataProcessor';
+    import { interactivity } from '@threlte/extras';
+	import { DocumentDetail } from 'model';
+	import { fetchDetailedDocumentData } from 'sqlite/sqlHandler';
 
-    import { generateDocumentIslandsAndBridges } from './VisualisationLogic';
-    import grassBlock from "./assets/3dmodels/grassBlock.glb";
-  
-    let nodes: any[] = [];
-    let lineVertices: number[][] = [];
-  
-    // Subscribe to the visualization data store
-    const unsubscribe = visualizationData.subscribe(value => {
-      nodes = value;
-      updateLineVertices(); // Call this function whenever the nodes update to recalculate line vertices
-    });
-  
+    let documents: DocumentDetail[] = [];
+    let connections: { start: [number, number, number], end: [number, number, number] }[] = [];
 
-    let islands: any[] = [];
-    let bridges: any[] = [];
-      
     onMount(async () => {
-        const { islands: loadedIslands, bridges: loadedBridges } = await generateDocumentIslandsAndBridges();
-        islands = loadedIslands;
-        bridges = loadedBridges;
-    });
-
-
-    // Clean up the subscription when the component unmounts
-    onMount(() => {
-      return () => unsubscribe();
-    });
-  
-    // Function to calculate and update the line vertices based on node data
-    function updateLineVertices() {
-      lineVertices = [];
-      nodes.forEach(node => {
-        node.connections.forEach((connectionId: any) => {
-          const targetNode = nodes.find(n => n.id === connectionId);
-          if (targetNode) {
-            lineVertices.push(
-              [node.x, node.y, node.z],
-              [targetNode.x, targetNode.y, targetNode.z]
-            );
-          }
+        // Fetch the detailed document data
+        documents = await fetchDetailedDocumentData();
+        // Apply the clustering and layout algorithm
+        documents = improvedClusteredLayout(documents);
+        // Generate the connections for visualization
+        documents.forEach(doc => {
+            doc.connections.forEach(conn => {
+                if (conn.connectedDocumentId) {
+                    const targetDoc = documents.find(d => d.documentId === conn.connectedDocumentId);
+                    if (targetDoc && targetDoc.position) {
+                        connections.push({
+                            start: convertPosition(doc.position),
+                            end: convertPosition(targetDoc.position)
+                        });
+                    }
+                }
+            });
         });
-      });
-    }
-  
-    const scale = spring(1, {
-      stiffness: 0.1,
-      damping: 0.2
     });
-    console.log('1', nodes);
-    console.log('2', lineVertices);
-  </script>
-  
-    <T.PerspectiveCamera
-      makeDefault
-      position={[10, 10, 10]}
-      on:create={({ ref }) => {
-        ref.lookAt(0, 0, 0)
-      }}
-    >
+
+    function convertPosition(position?: { x: number, y: number, z: number }): [number, number, number] {
+        if (!position) return [0, 0, 0];
+        return [position.x, position.y, position.z];
+    }
+
+    function handleDocumentClick(document: DocumentDetail) {
+        console.log("Document clicked:", document);
+    }
+</script>
+
+<Canvas>
+    {interactivity()}
+    <T.PerspectiveCamera makeDefault position={[10, 10, 10]} on:create={({ ref }) => ref.lookAt(0, 0, 0)}>
         <OrbitControls />
     </T.PerspectiveCamera>
-  
     <T.AmbientLight intensity={0.3} />
-    <T.DirectionalLight position={[3, 10, 7]} intensity={Math.PI} />
-  
-    {#each islands as island}
-        {#each island.models as model}
-        <T.Mesh
-            position={[model.x, 0, model.z]}
-            scale={[1.5, 1.5, 1.5]}
-        />
-        {/each}
+    <T.DirectionalLight position={[3, 10, 7]} intensity={1} />
+
+    {#each documents as document}
+        <T.Mesh position={convertPosition(document.position)} on:click={() => handleDocumentClick(document)}>
+            <T.BoxGeometry args={[1, 1, 1]} />
+            <T.MeshStandardMaterial color='#ffcc00' />
+        </T.Mesh>
     {/each}
 
-    {#each bridges as bridge}
-        <T.Line
-        points={[[bridge.start.x, bridge.start.y, bridge.start.z], [bridge.end.x, bridge.end.y, bridge.end.z]]}
-        />
+    {#each connections as connection}
+        <T.Line points={[connection.start, connection.end]}>
+            <T.LineBasicMaterial color='#ff0000' linewidth={2} />
+        </T.Line>
     {/each}
-  
-    <T.GridHelper args={[50, 50]} colorGrid="#FE3D00" colorCenterLine="#FE3D00" />
+
+    <T.GridHelper args={[50, 50, 1, '#FE3D00', '#FE3D00']} />
+</Canvas>

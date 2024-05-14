@@ -1,7 +1,7 @@
 // Visualization.ts
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import Component from './Visualisation.svelte';
-import Test from './Graph.svelte';
+import Test from './Scene.svelte';
 
 export class Visualisation extends ItemView {
     test: Test;
