@@ -103,6 +103,7 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
 
   export async function saveConnectionAnalysisResults(analysisResults: any) {
     try {
+        console.log('Analysis results in sqlHandler:', analysisResults);
         for (const docResult of analysisResults.analysis) {
             const documentId = docResult.documentId;
             const connections = docResult.connections;
@@ -110,14 +111,12 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
             for (const connectionType in connections) {
                 const connectionList = connections[connectionType];
                 for (const connection of connectionList) {
-                    // Store only the first connected document ID
-                    const firstConnectedDocumentId = connection.connectedDocumentIds[0];
                     await db.documentConnections.add({
                         documentId,
-                        connectedDocumentId: firstConnectedDocumentId,
+                        connectedDocumentId: connection.connectedDocumentId,
                         connectionType,
                         sharedAttributes: connection.sharedAttributes,
-                        weight: connection.medianWeight 
+                        weight: connection.medianWeight
                     });
                 }
             }
@@ -128,6 +127,8 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
         throw new Error("Error saving connection results to the database: " + error.message);
     }
 }
+
+
 
 
   export async function fetchAllDocumentData(): Promise<DocumentAnalysis[]> {
@@ -173,6 +174,12 @@ export async function fetchDetailedDocumentData(): Promise<DocumentDetail[]> {
       });
   }
   return detailedDocuments;
+}
+
+export async function dropConnections() {
+  await db.transaction('rw', db.documentConnections, async () => {
+    await db.documentConnections.clear();
+  });
 }
 
 

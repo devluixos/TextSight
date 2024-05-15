@@ -3,6 +3,4 @@
     import Scene from './Scene.svelte'
   </script>
   
-  <Canvas>
-    <Scene />
-  </Canvas>
+  <Scene />

@@ -1,7 +1,7 @@
 // Visualization.ts
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import Component from './Visualisation.svelte';
-import Test from './Scene.svelte';
+import Test from './SceneWrapper.svelte';
 
 export class Visualisation extends ItemView {
     test: Test;
@@ -15,7 +15,7 @@ export class Visualisation extends ItemView {
     }
 
     getDisplayText(): string {
-        return 'My Visualisation';
+        return 'TextSight';
     }
 
     getIcon(): string {
