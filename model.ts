@@ -99,7 +99,7 @@ export interface DocumentDetail {
     topics: any[];
     keywords: any[];
     sentiments: any[];
-    connections: { connectedDocumentId: string }[];
+    connections: { connectedDocumentId: string, weight: number }[];
     position?: { x: number, y: number, z: number };
     force?: { x: number, y: number, z: number };
 }
