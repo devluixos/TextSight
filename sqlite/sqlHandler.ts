@@ -173,6 +173,7 @@ export async function fetchDetailedDocumentData(): Promise<DocumentDetail[]> {
           }))
       });
   }
+  console.log('Detailed document data fetched:', detailedDocuments);
   return detailedDocuments;
 }
 

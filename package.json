@@ -48,12 +48,15 @@
 		"d3-force": "^3.0.0",
 		"dexie": "^4.0.1",
 		"dotenv": "^16.4.5",
+		"graphology": "^0.25.4",
+		"graphology-layout-forceatlas2": "^0.10.1",
 		"openai": "^4.28.4",
 		"prompt-sync": "^4.2.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"svelte-loading-spinners": "^0.3.6",
 		"three": "^0.163.0",
+		"three-forcegraph": "^1.41.14",
 		"threlte": "^3.13.1"
 	}
 }

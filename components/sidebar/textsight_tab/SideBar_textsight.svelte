@@ -3,18 +3,18 @@
   import { handleAnalyseConnections } from '../../../nlp/nlpService';
   import { dropConnections } from 'sqlite/sqlHandler';
   import Scene from '../../visualisation/Scene.svelte';
-  import { setParameters } from '../../visualisation/DocumentDataProcessor';
 
-  let sceneRef: any = null;
-  let width = 50;
-  let height = 50;
-  let maxIterations = 3000;
-  let scale = 0.1;
-  let connectionStrength = 0.3;
-  let repulsionStrength = 0.1;
-  let clusterRepulsionStrength = 0.1;
-  let centralAttractionStrength = 5.05;
-  let minDistance = 3;
+  import { 
+    width, height, maxIterations, scale, 
+    connectionStrength, repulsionStrength, 
+    clusterRepulsionStrength, centralAttractionStrength, minDistance 
+  } from '../../visualisation/parameters';
+
+  type SceneComponent = {
+    initializeVisualization: () => void;
+  };
+
+  let sceneRef: SceneComponent | null = null;
 
   function reloadVisualization() {
     if (sceneRef) {
@@ -22,24 +22,8 @@
     }
   }
 
-  $: {
-    setParameters({
-      width,
-      height,
-      maxIterations,
-      scale,
-      connectionStrength,
-      repulsionStrength,
-      clusterRepulsionStrength,
-      centralAttractionStrength,
-      minDistance
-    });
-    reloadVisualization();
-  }
-
   function onTextSightTabClick() {
     let textSightLeaf = this.app.workspace.getLeavesOfType('my-visualisation')[0];
-
     if (!textSightLeaf) {
       textSightLeaf = this.app.workspace.getLeaf();
       textSightLeaf.setViewState({ type: 'my-visualisation' });
@@ -53,46 +37,80 @@
   });
 </script>
 
+<style>
+  .slider-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .slider-container input {
+    width: 100%;
+  }
+
+  .value-label {
+    text-align: right;
+  }
+</style>
+
 <div class="content textsight-content">
   <h3>Analyse the connections!</h3>
   <button on:click={() => handleAnalyseConnections()}>Analyse Connections</button>
   <button on:click={() => dropConnections()}>Drop Connections</button>
 
-  <h3>Visualization Parameters</h3>
-  <div>
-    <label>Width: {width}</label>
-    <input type="range" min="10" max="100" step="1" bind:value={width} />
+  <div class="slider-container">
+    <label for="width">Width</label>
+    <input id="width" type="range" min="50" max="500" step="10" bind:value={$width} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$width}</span>
   </div>
-  <div>
-    <label>Height: {height}</label>
-    <input type="range" min="10" max="100" step="1" bind:value={height} />
+
+  <div class="slider-container">
+    <label for="height">Height</label>
+    <input id="height" type="range" min="50" max="500" step="10" bind:value={$height} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$height}</span>
   </div>
-  <div>
-    <label>Max Iterations: {maxIterations}</label>
-    <input type="range" min="100" max="5000" step="100" bind:value={maxIterations} />
+
+  <div class="slider-container">
+    <label for="maxIterations">Max Iterations</label>
+    <input id="maxIterations" type="range" min="100" max="5000" step="100" bind:value={$maxIterations} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$maxIterations}</span>
   </div>
-  <div>
-    <label>Scale: {scale}</label>
-    <input type="range" min="0.01" max="2" step="0.01" bind:value={scale} />
+
+  <div class="slider-container">
+    <label for="scale">Scale</label>
+    <input id="scale" type="range" min="0.01" max="1" step="0.01" bind:value={$scale} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$scale}</span>
   </div>
-  <div>
-    <label>Connection Strength: {connectionStrength}</label>
-    <input type="range" min="0.1" max="2" step="0.1" bind:value={connectionStrength} />
+
+  <div class="slider-container">
+    <label for="connectionStrength">Connection Strength</label>
+    <input id="connectionStrength" type="range" min="0.01" max="1" step="0.01" bind:value={$connectionStrength} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$connectionStrength}</span>
   </div>
-  <div>
-    <label>Repulsion Strength: {repulsionStrength}</label>
-    <input type="range" min="0.1" max="2" step="0.1" bind:value={repulsionStrength} />
+
+  <div class="slider-container">
+    <label for="repulsionStrength">Repulsion Strength</label>
+    <input id="repulsionStrength" type="range" min="0.01" max="1" step="0.01" bind:value={$repulsionStrength} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$repulsionStrength}</span>
   </div>
-  <div>
-    <label>Cluster Repulsion Strength: {clusterRepulsionStrength}</label>
-    <input type="range" min="0.1" max="2" step="0.1" bind:value={clusterRepulsionStrength} />
+
+  <div class="slider-container">
+    <label for="clusterRepulsionStrength">Cluster Repulsion Strength</label>
+    <input id="clusterRepulsionStrength" type="range" min="0.01" max="1" step="0.01" bind:value={$clusterRepulsionStrength} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$clusterRepulsionStrength}</span>
   </div>
-  <div>
-    <label>Central Attraction Strength: {centralAttractionStrength}</label>
-    <input type="range" min="0" max="2" step="0.1" bind:value={centralAttractionStrength} />
+
+  <div class="slider-container">
+    <label for="centralAttractionStrength">Central Attraction Strength</label>
+    <input id="centralAttractionStrength" type="range" min="0.01" max="1" step="0.01" bind:value={$centralAttractionStrength} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$centralAttractionStrength}</span>
   </div>
-  <div>
-    <label>Min Distance: {minDistance}</label>
-    <input type="range" min="0" max="2" step="0.1" bind:value={minDistance} />
+
+  <div class="slider-container">
+    <label for="minDistance">Min Distance</label>
+    <input id="minDistance" type="range" min="1" max="50" step="1" bind:value={$minDistance} on:input={() => reloadVisualization()} />
+    <span class="value-label">{$minDistance}</span>
   </div>
 </div>

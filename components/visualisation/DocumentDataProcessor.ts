@@ -1,147 +1,102 @@
 import { DocumentDetail } from 'model';
-import { fetchDetailedDocumentData } from '../../sqlite/sqlHandler';
+import { width, height, scale, attractionConstant, repulsionConstant, minRadius, iterations, maxProximity, centerPullStrength } from './parameters';
 
-// Parameters
-let width = 20;
-let height = 20;
-let maxIterations = 2000;
-let scale = 0.5;
-let connectionStrength = 0.1;
-let repulsionStrength = 0.3;
-let clusterRepulsionStrength = 0.2;
-let centralAttractionStrength = 0.02;
-let minDistance = 5;
-let centralPoint = { x: 0, y: 0, z: 0 };
+let widthVal: number;
+let heightVal: number;
+let scaleVal: number;
+let attractionConstantVal: number;
+let repulsionConstantVal: number;
+let minRadiusVal: number;
+let iterationsVal: number;
+let maxProximityVal: number;
+let centerPullStrengthVal: number;
 
-// Set parameters function
-export function setParameters(params: {
-  width?: number,
-  height?: number,
-  maxIterations?: number,
-  scale?: number,
-  connectionStrength?: number,
-  repulsionStrength?: number,
-  clusterRepulsionStrength?: number,
-  centralAttractionStrength?: number,
-  minDistance?: number,
-  centralPoint?: { x: number, y: number, z: number }
-}) {
-  if (params.width !== undefined) width = params.width;
-  if (params.height !== undefined) height = params.height;
-  if (params.maxIterations !== undefined) maxIterations = params.maxIterations;
-  if (params.scale !== undefined) scale = params.scale;
-  if (params.connectionStrength !== undefined) connectionStrength = params.connectionStrength;
-  if (params.repulsionStrength !== undefined) repulsionStrength = params.repulsionStrength;
-  if (params.clusterRepulsionStrength !== undefined) clusterRepulsionStrength = params.clusterRepulsionStrength;
-  if (params.centralAttractionStrength !== undefined) centralAttractionStrength = params.centralAttractionStrength;
-  if (params.minDistance !== undefined) minDistance = params.minDistance;
-  if (params.centralPoint !== undefined) centralPoint = params.centralPoint;
-}
+width.subscribe(value => widthVal = value);
+height.subscribe(value => heightVal = value);
+scale.subscribe(value => scaleVal = value);
+attractionConstant.subscribe(value => attractionConstantVal = value);
+repulsionConstant.subscribe(value => repulsionConstantVal = value);
+minRadius.subscribe(value => minRadiusVal = value);
+iterations.subscribe(value => iterationsVal = value);
+maxProximity.subscribe(value => maxProximityVal = value);
+centerPullStrength.subscribe(value => centerPullStrengthVal = value);
 
-// Identify clusters
-function identifyClusters(documents: DocumentDetail[]): DocumentDetail[][] {
-  const clusters: DocumentDetail[][] = [];
-  const visited = new Set<string>();
-
-  function dfs(document: DocumentDetail, cluster: DocumentDetail[]) {
-    visited.add(document.documentId);
-    cluster.push(document);
-    document.connections.forEach(conn => {
-      const targetDoc = documents.find(d => d.documentId === conn.connectedDocumentId);
-      if (targetDoc && !visited.has(targetDoc.documentId)) {
-        dfs(targetDoc, cluster);
-      }
-    });
-  }
-
+export function initializePositions(documents: DocumentDetail[]): DocumentDetail[] {
   documents.forEach(doc => {
-    if (!visited.has(doc.documentId)) {
-      const cluster: DocumentDetail[] = [];
-      dfs(doc, cluster);
-      clusters.push(cluster);
-    }
-  });
-
-  return clusters;
-}
-
-// Improved clustered layout
-export function improvedClusteredLayout(documents: DocumentDetail[]): DocumentDetail[] {
-  const clusters = identifyClusters(documents);
-  const k = Math.sqrt((width * height) / documents.length);
-
-  clusters.forEach(cluster => {
-    const clusterCenter = {
-      x: (Math.random() * width - width / 2) * scale,
+    doc.position = {
+      x: (Math.random() * widthVal - widthVal / 2) * scaleVal,
       y: 0,
-      z: (Math.random() * height - height / 2) * scale
+      z: (Math.random() * heightVal - heightVal / 2) * scaleVal,
     };
-
-    cluster.forEach(doc => {
-      if (!doc.position) {
-        doc.position = {
-          x: clusterCenter.x + (Math.random() * width - width / 2) * scale,
-          y: 0,
-          z: clusterCenter.z + (Math.random() * height - height / 2) * scale
-        };
-      }
-      if (!doc.force) {
-        doc.force = { x: 0, y: 0, z: 0 };
-      }
-    });
-
-    for (let iteration = 0; iteration < maxIterations; iteration++) {
-      cluster.forEach((doc1, i) => {
-        doc1.force = { x: 0, y: 0, z: 0 };
-        cluster.forEach((doc2, j) => {
-          if (i !== j) {
-            const dx = doc1.position!.x - doc2.position!.x;
-            const dz = doc1.position!.z - doc2.position!.z;
-            const distance = Math.sqrt(dx * dx + dz * dz) || 1;
-            if (distance < minDistance) {
-              const repulsiveForce = (minDistance - distance) * repulsionStrength;
-              doc1.force!.x += (dx / distance) * repulsiveForce;
-              doc1.force!.z += (dz / distance) * repulsiveForce;
-            }
-          }
-        });
-      });
-
-      cluster.forEach(doc => {
-        doc.connections.forEach(conn => {
-          const targetDoc = cluster.find(d => d.documentId === conn.connectedDocumentId);
-          if (targetDoc) {
-            const dx = doc.position!.x - targetDoc.position!.x;
-            const dz = doc.position!.z - targetDoc.position!.z;
-            const distance = Math.sqrt(dx * dx + dz * dz) || 1;
-            const attractiveForce = (distance * distance) / k * connectionStrength;
-            doc.force!.x -= (dx / distance) * attractiveForce;
-            doc.force!.z -= (dz / distance) * attractiveForce;
-            targetDoc.force!.x += (dx / distance) * attractiveForce;
-            targetDoc.force!.z += (dz / distance) * attractiveForce;
-          }
-        });
-      });
-
-      cluster.forEach(doc => {
-        doc.position!.x += doc.force!.x;
-        doc.position!.z += doc.force!.z;
-        doc.position!.x = Math.min(width / 2, Math.max(-width / 2, doc.position!.x));
-        doc.position!.z = Math.min(height / 2, Math.max(-height / 2, doc.position!.z));
-      });
-    }
-  });
-
-  clusters.forEach(cluster => {
-    cluster.forEach(doc => {
-      const dx = centralPoint.x - doc.position!.x;
-      const dz = centralPoint.z - doc.position!.z;
-      doc.position!.x += dx * centralAttractionStrength;
-      doc.position!.z += dz * centralAttractionStrength;
-      doc.position!.x = Math.min(width / 2, Math.max(-width / 2, doc.position!.x));
-      doc.position!.z = Math.min(height / 2, Math.max(-height / 2, doc.position!.z));
-    });
+    doc.force = { x: 0, y: 0, z: 0 };
   });
 
   return documents;
+}
+
+function applyAttractionForces(documents: DocumentDetail[]): void {
+  documents.forEach(doc => {
+    doc.connections.forEach(conn => {
+      const targetDoc = documents.find(d => d.documentId === conn.connectedDocumentId);
+      if (targetDoc && targetDoc.position && doc.position) {
+        const dx = targetDoc.position.x - doc.position.x;
+        const dz = targetDoc.position.z - doc.position.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+        const forceMagnitude = attractionConstantVal * conn.weight;
+
+        doc.force!.x += (dx / distance) * forceMagnitude;
+        doc.force!.z += (dz / distance) * forceMagnitude;
+      }
+    });
+  });
+}
+
+function applyRepulsionForces(documents: DocumentDetail[]): void {
+  documents.forEach(doc => {
+    documents.forEach(otherDoc => {
+      if (otherDoc !== doc && otherDoc.position && doc.position) {
+        const dx = doc.position.x - otherDoc.position.x;
+        const dz = doc.position.z - otherDoc.position.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+        if (distance < maxProximityVal) {
+          const overlap = maxProximityVal - distance;
+          const forceMagnitude = repulsionConstantVal * overlap / (distance * distance);
+
+          doc.force!.x += (dx / distance) * forceMagnitude;
+          doc.force!.z += (dz / distance) * forceMagnitude;
+        }
+      }
+    });
+  });
+}
+
+function applyCenterPull(documents: DocumentDetail[]): void {
+  documents.forEach(doc => {
+    const dx = -doc.position!.x;
+    const dz = -doc.position!.z;
+    const distance = Math.sqrt(dx * dx + dz * dz);
+    const forceMagnitude = centerPullStrengthVal * distance;
+
+    doc.force!.x += (dx / distance) * forceMagnitude;
+    doc.force!.z += (dz / distance) * forceMagnitude;
+  });
+}
+
+function updatePositions(documents: DocumentDetail[]): void {
+  documents.forEach(doc => {
+    if (doc.position && doc.force) {
+      doc.position.x += doc.force.x;
+      doc.position.z += doc.force.z;
+    }
+  });
+}
+
+export function runForceDirectedLayout(documents: DocumentDetail[]): void {
+  for (let i = 0; i < iterationsVal; i++) {
+    documents.forEach(doc => doc.force = { x: 0, y: 0, z: 0 });
+    applyAttractionForces(documents);
+    applyRepulsionForces(documents);
+    applyCenterPull(documents);
+    updatePositions(documents);
+  }
 }
