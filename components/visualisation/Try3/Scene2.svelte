@@ -62,7 +62,6 @@
 
     <DocumentScene {documents} {nodePositions} />
 
-    <T.GridHelper args={[50, 50, 1, '#FE3D00', '#FE3D00']} />
   </CSM>
 </Canvas>
 

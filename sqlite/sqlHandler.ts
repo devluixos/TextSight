@@ -177,6 +177,30 @@ export async function fetchDetailedDocumentData(): Promise<DocumentDetail[]> {
   return detailedDocuments;
 }
 
+export async function fetchDocumentDataById(documentId: string): Promise<DocumentDetail | null> {
+  const document = await db.documents.where({ documentId }).first();
+  if (!document) return null;
+
+  const entities = await db.entities.where({ documentId }).toArray();
+  const topics = await db.topics.where({ documentId }).toArray();
+  const keywords = await db.keywords.where({ documentId }).toArray();
+  const sentiments = await db.sentiments.where({ documentId }).toArray();
+  const connections = await db.documentConnections.where({ documentId }).toArray();
+
+  // Aggregate all related data into a single object for this document
+  return {
+      ...document,
+      entities,
+      topics,
+      keywords,
+      sentiments,
+      connections: connections.map(async (conn: { connectedDocumentId: any; }) => ({
+          ...conn,
+          connectedDocument: (await db.documents.where({ documentId: conn.connectedDocumentId }).first()) || null
+      }))
+  };
+}
+
 export async function dropConnections() {
   await db.transaction('rw', db.documentConnections, async () => {
     await db.documentConnections.clear();

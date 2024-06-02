@@ -109,3 +109,11 @@ export interface DocumentDetail {
     fy?: number;
     fz?: number;
 }
+
+export interface ClusterCenter {
+    x: number;
+    y: number;
+    z: number;
+    topics: string[];
+    visible: boolean;
+}

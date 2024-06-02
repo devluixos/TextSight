@@ -9,7 +9,7 @@ function initializeRandomPositions(documents: DocumentDetail[]): { [key: string]
   documents.forEach(doc => {
     positions[doc.documentId] = {
       x: (Math.random() * 50 - 25) * SCALING_FACTOR,
-      y: 1,  // Keep y constant
+      y: 0,  // Keep y constant
       z: (Math.random() * 50 - 25) * SCALING_FACTOR
     };
   });
