@@ -116,4 +116,5 @@ export interface ClusterCenter {
     z: number;
     topics: string[];
     visible: boolean;
+    documents: DocumentDetail[];
 }

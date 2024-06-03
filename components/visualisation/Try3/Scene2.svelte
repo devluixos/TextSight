@@ -47,7 +47,7 @@
       <OrbitControls />
     </T.PerspectiveCamera>
     <T.AmbientLight intensity={0.3} />
-    <T.DirectionalLight position={[3, 10, 7]} intensity={1} />
+    <T.DirectionalLight position={[3, 10, 7]} intensity={0.1} />
     <Stars />
 
     <Sky

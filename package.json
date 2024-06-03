@@ -54,6 +54,7 @@
 		"prompt-sync": "^4.2.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"simplex-noise": "^4.0.1",
 		"svelte-loading-spinners": "^0.3.6",
 		"three": "^0.163.0",
 		"three-forcegraph": "^1.41.14",
