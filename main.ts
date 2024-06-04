@@ -1,8 +1,10 @@
-import { ItemView, WorkspaceLeaf, Plugin, addIcon } from 'obsidian';
+import { ItemView, WorkspaceLeaf, Plugin, addIcon, FileSystemAdapter, Notice } from 'obsidian';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { Sidebar } from './components/sidebar/SideBar';
 import { Visualisation } from './components/visualisation/Visualisation';
 import { initializeDatabase, clearDatabase } from 'sqlite/sqlHandler';
+import path from 'path';
+import fs from 'fs';
 
 
 export default class MyPlugin extends Plugin {
@@ -10,6 +12,9 @@ export default class MyPlugin extends Plugin {
     statusBar: HTMLElement;
 
     async onload() {
+        //creating env file if not exists
+        createEnvFile();
+
         this.registerView('my-sidebar', (leaf: WorkspaceLeaf) => new Sidebar(leaf));
         this.registerView('my-visualisation', leaf => new Visualisation(leaf));
 		this.statusBarComponent = new StatusBar(this);
@@ -72,6 +77,8 @@ export default class MyPlugin extends Plugin {
 
     }
 
+
+
 	navigateToSidebar() {
 		const leaves = this.app.workspace.getLeavesOfType('my-sidebar');
 		if (leaves.length > 0) {
@@ -97,4 +104,18 @@ export default class MyPlugin extends Plugin {
     onunload() {
         this.statusBar.remove();
     }
+}
+
+export async function createEnvFile() {
+    //creating env file if not exists
+    let adapter = app.vault.adapter;
+    let envPath = '';
+    if (adapter instanceof FileSystemAdapter) {
+        envPath = adapter.getBasePath();
+    }
+    envPath = path.join(envPath, './.obsidian/plugins/TextSight/.env');
+    if (!fs.existsSync(envPath)) {
+        fs.writeFileSync(envPath, 'OPENAI_API_KEY=ADD KEY HERE'); // Creates the .env file with a placeholder for the API key
+        new Notice('A .env file has been created in the root of this plugin. Please add your API key for the TextSight plugin.');
+    }    
 }
