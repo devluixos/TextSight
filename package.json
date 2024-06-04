@@ -42,6 +42,7 @@
 		"@mlc-ai/web-llm": "^0.2.23",
 		"@threlte/core": "^7.3.0",
 		"@threlte/extras": "^8.11.2",
+		"@threlte/flex": "^1.0.2",
 		"3d-force-graph": "^1.73.3",
 		"aframe": "^1.5.0",
 		"aframe-orbit-controls": "^1.3.2",

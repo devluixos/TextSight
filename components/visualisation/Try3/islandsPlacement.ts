@@ -43,13 +43,10 @@ export function generateIslandData(clusterCenters: { [key: string]: ClusterCente
         Math.abs(pos.y - center.y) < 10 &&
         Math.abs(pos.z - center.z) < 10
       );
-      console.log(`Document ${doc.documentId} at (${pos.x}, ${pos.y}, ${pos.z}) is ${inCluster ? '' : 'not '}in cluster ${index} centered at (${center.x}, ${center.y}, ${center.z})`);
       return inCluster;
     });
 
     const size = clusterDocuments.length;
-    console.log(`Cluster ${index}: Size = ${size}, Position = [${center.x}, ${center.y}, ${center.z}], IslandType = ${size <= 2 ? 'island1' : size <= 4 ? 'island2' : 'island3'}`);
-
     return {
       position: [center.x, center.y + getYOffsetForCluster(size), center.z] as [number, number, number],
       scale: getScaleForCluster(size),

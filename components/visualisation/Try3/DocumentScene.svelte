@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { T, useFrame } from '@threlte/core';
-  import { Billboard, HTML, Text } from '@threlte/extras';
   import { ClusterCenter, DocumentDetail } from 'model';
   import * as THREE from 'three';
   import { writable, get } from 'svelte/store';
@@ -16,8 +15,11 @@
   import Modal from './Modal.svelte';
   import { calculateClusters, clusterCenters } from './calculateClusters';
   import { generateIslandData } from './islandsPlacement';
+  import ClusterTitle from './TextElements/ClusterTitle.svelte';
+  import DocumentTitle from './TextElements/DocumentTitle.svelte';
+  import { Billboard, Text } from '@threlte/extras';
 
-  // Models
+    // Models
   import tree1 from './ConvertedElements/tree1.svelte';
   import tree2 from './ConvertedElements/tree2.svelte';
   import tree3 from './ConvertedElements/tree3.svelte';
@@ -32,7 +34,8 @@
   export let documents: DocumentDetail[] = [];
   export let nodePositions: { [key: string]: { x: number, y: number, z: number } } = {};
   const documentVisibility = writable<{ [key: string]: boolean }>({});
-  const islands = writable<any[]>([]); // Store for islands
+  const islands = writable<any[]>([]);
+  let cameraPosition = new THREE.Vector3();
 
   // Initialize values from the stores
   let currentDistanceThreshold: number;
@@ -67,7 +70,6 @@
   }
 
   function handleDocumentClick(document: DocumentDetail) {
-    console.log("Document clicked:", document);
     selectedDocument.set({ document, position: convertPosition(document.documentId) });
   }
 
@@ -85,20 +87,20 @@
       { component: bench1, scale: 2, yOffset: 0 }
     ];
     const randomIndex = Math.floor(Math.random() * models.length);
-    const rotation = [0, Math.random() * Math.PI * 2, 0]; // Random rotation around the Y-axis
+    const rotation = [0, Math.random() * Math.PI * 2, 0];
     return { ...models[randomIndex], rotation };
   }
 
-
-  clusterCenters.subscribe(value => {    
-    console.log("Cluster centers:", value);
+  clusterCenters.subscribe(value => {
     const islandData = generateIslandData(value, documents, nodePositions);
     islands.set(islandData);
   });
 
   useFrame(({ camera }) => {
-    const cameraPosition = camera.current.position;
+    cameraPosition.copy(camera.current.position);
     const visibility: { [key: string]: boolean } = {};
+
+    // Calculate visibility for documents
     documents.forEach(doc => {
       const docPosition = new THREE.Vector3(
         nodePositions[doc.documentId].x,
@@ -109,18 +111,26 @@
       visibility[doc.documentId] = distance <= currentDistanceThreshold && distance >= currentMinVisibilityDistance;
     });
     documentVisibility.set(visibility);
+
+    // Remove visibility checks for islands
+    islands.update(islands => {
+      islands.forEach(island => {
+        island.visible = true; // Ensure islands are always visible
+      });
+      return islands;
+    });
+
+    // Recalculate clusters
     calculateClusters(documents, nodePositions, cameraPosition, currentClusterRadius, currentMinClusterVisibilityDistance, currentMaxClusterVisibilityDistance);
   });
+
 </script>
 
 <!-- Svelte markup -->
-
 {#each $islands as island (island.position)}
-  {#if island.visible}
-    <T.Group position={island.position} scale={[island.scale, island.scale, island.scale]}>
-      <svelte:component this={island.component} />
-    </T.Group>
-  {/if}
+  <T.Group position={island.position} scale={island.scale}>
+    <svelte:component this={island.component} />
+  </T.Group>
 {/each}
 
 {#each documents as document (document.documentId)}
@@ -130,36 +140,24 @@
         <svelte:component this={component} scale={scale} rotation={rotation} />
       </T.Group>
     {/await}
-
     {#if $documentVisibility[document.documentId]}
-      <Billboard>
-        <Text
-          fontSize={0.5}
-          position={[0, 1.5, 0]}
-          text={document.documentId || 'Unnamed Document'}
-          color='white'
-          anchorX="center"
-          anchorY="middle"
-        />
-      </Billboard>
+      <DocumentTitle 
+        position={[0, 1.5, 0]}
+        text={document.documentId || 'Unnamed Document'}
+        keypoints={document.keywords || []} 
+        cameraPosition={cameraPosition}
+      />
     {/if}
   </T.Group>
 {/each}
 
+
 {#each Object.entries($clusterCenters) as [index, center]}
   {#if center.visible}
-    <T.Group position={[center.x, center.y, center.z]}>
-      <Billboard>
-        <Text
-          fontSize={1}
-          position={[0, 1.5, 0]}
-          text={center.topics.join(', ')}
-          color='blue'
-          anchorX="center"
-          anchorY="middle"
-        />
-      </Billboard>
-    </T.Group>
+    <ClusterTitle 
+      position={[center.x, center.y, center.z]} 
+      text={center.topics.join(', ')} 
+      cameraPosition={cameraPosition} />
   {/if}
 {/each}
 
