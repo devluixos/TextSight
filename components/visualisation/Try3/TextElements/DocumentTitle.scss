@@ -1,17 +1,18 @@
 .text-container {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(3, 3, 3, 0.6);  // Solid dark background color
   padding: 0.5rem;
   border-radius: 0.25rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px);
   transition: opacity 0.5s;
-  max-width: 200px;
+  width: 300px;
+  max-width: 400px;
 }
 
 .text {
   color: white;
   text-align: center;
   font-family: 'Arial', sans-serif;
+  word-wrap: break-word;
 
   .title {
     font-size: 1.2rem;
@@ -19,13 +20,16 @@
     margin-bottom: 0.5rem;
   }
 
-  .keypoints {
+  .keywords {
     font-size: 1rem;
     text-align: left;
     padding-left: 1rem;
+    list-style-type: disc;
 
     li {
       margin-bottom: 0.3rem;
     }
   }
 }
+
+

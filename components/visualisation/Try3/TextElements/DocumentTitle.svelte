@@ -1,43 +1,42 @@
 <script lang="ts">
   import { Billboard, HTML } from '@threlte/extras';
-  import { get } from 'svelte/store';
-  import { distance_threshold, min_visibility_distance } from '../parameters';
+  import { MeshLineGeometry, MeshLineMaterial } from '@threlte/extras';
+  import { T } from '@threlte/core';
   import * as THREE from 'three';
 
   export let position: [number, number, number];
   export let text: string;
-  export let keypoints: string[] = [];
-  export let cameraPosition: THREE.Vector3;
+  export let keywords: { keyword: string, weight: number }[] = [];
 
-  function getTextOpacity(distance: number): number {
-    const fadeStart = get(min_visibility_distance);
-    const fadeEnd = get(distance_threshold);
-    if (distance <= fadeStart || distance >= fadeEnd) return 0;
-    return 1 - (Math.abs(distance - fadeStart) / (fadeEnd - fadeStart));
-  }
+  // Get the top 3 keywords based on weight
+  $: topKeywords = keywords.sort((a, b) => b.weight - a.weight).slice(0, 3);
 
-  function getDistance(cameraPosition: THREE.Vector3, centerPosition: [number, number, number]): number {
-    const dx = cameraPosition.x - centerPosition[0];
-    const dy = cameraPosition.y - centerPosition[1];
-    const dz = cameraPosition.z - centerPosition[2];
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
-  }
-
-  $: distance = getDistance(cameraPosition, position);
-  $: opacity = getTextOpacity(distance);
+  // Points for the line from the bottom of the billboard to 5 units downwards
+  $: points = [
+    new THREE.Vector3(position[0], position[1] + 7, position[2]),
+    new THREE.Vector3(position[0], position[1], position[2])
+  ];
 </script>
 
-<Billboard position={position}>
+<Billboard position={[position[0], position[1] + 7, position[2]]}>
   <HTML>
-    <div class="text-container" style="opacity: {opacity}">
+    <div class="text-container">
       <div class="text">
         <div class="title">{text}</div>
-        <ul class="keypoints">
-          {#each keypoints as keypoint}
-            <li>{keypoint}</li>
+        <ul class="keywords">
+          {#each topKeywords as keyword}
+            <li>{keyword.keyword}</li>
           {/each}
         </ul>
       </div>
     </div>
   </HTML>
 </Billboard>
+<T.Mesh>
+  <MeshLineGeometry points={points} />
+  <MeshLineMaterial width={0.05} color="rgba(0, 0, 0)" transparent />
+</T.Mesh>
+
+<style lang="scss">
+  @import './DocumentTitle.scss';
+</style>

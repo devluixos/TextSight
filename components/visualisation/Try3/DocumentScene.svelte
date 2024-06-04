@@ -111,15 +111,6 @@
       visibility[doc.documentId] = distance <= currentDistanceThreshold && distance >= currentMinVisibilityDistance;
     });
     documentVisibility.set(visibility);
-
-    // Remove visibility checks for islands
-    islands.update(islands => {
-      islands.forEach(island => {
-        island.visible = true; // Ensure islands are always visible
-      });
-      return islands;
-    });
-
     // Recalculate clusters
     calculateClusters(documents, nodePositions, cameraPosition, currentClusterRadius, currentMinClusterVisibilityDistance, currentMaxClusterVisibilityDistance);
   });
@@ -144,8 +135,7 @@
       <DocumentTitle 
         position={[0, 1.5, 0]}
         text={document.documentId || 'Unnamed Document'}
-        keypoints={document.keywords || []} 
-        cameraPosition={cameraPosition}
+        keywords={document.keywords || []}
       />
     {/if}
   </T.Group>
