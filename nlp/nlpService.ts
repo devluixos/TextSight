@@ -4,27 +4,35 @@ import { DocumentAnalysis, DocumentDetail, Entity, Keyword, Topic } from 'model'
 import { dropConnections, fetchAllDocumentData, fetchDetailedDocumentData } from 'sqlite/sqlHandler';
 import { saveConnectionAnalysisResults } from 'sqlite/sqlHandler';
 import { writable } from 'svelte/store';
+import { createEnvFile } from 'main';
 
 /**
  * GPT API SETUP
  */
-const basePath = (app.vault.adapter as any).basePath
-//Load environment variables
-dotenv.config({
-  path: `${basePath}/.obsidian/plugins/TextSight/.env`,
-  debug: false
- })
+let openai: any;
+function checkEnvFile() {
+  createEnvFile().then(() => {
+    const basePath = (app.vault.adapter as any).basePath
+    //Load environment variables
+    dotenv.config({
+      path: `${basePath}/.obsidian/plugins/TextSight/.env`,
+      debug: false
+    })
+    // Rest of your code
+  });
 
-// Check if OPENAI_API_KEY is defined
-if (!process.env.OPENAI_API_KEY) {
-  console.log('The OPENAI_API_KEY environment variable is not defined');  
-  throw new Error('The OPENAI_API_KEY environment variable is not defined');
+  // Check if OPENAI_API_KEY is defined
+  if (!process.env.OPENAI_API_KEY) {
+    console.log('The OPENAI_API_KEY environment variable is not defined');  
+    throw new Error('The OPENAI_API_KEY environment variable is not defined');
+  }
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true
+  });
+
 }
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true
-});
 
 
 /**
