@@ -26,7 +26,7 @@ Open Obsidian, go to `Settings` -> `Community Plugins`, disable `Safe Mode`, and
 
 **API Key Setup:**
 Open the plugin settings from the sidebar and enter your OpenAI API key.
-[ApiKey](https://github.com/devluixos/TextSight/blob/master/apikeyadding.png)
+![ApiKey](https://github.com/devluixos/TextSight/blob/master/apikeyadding.png)
 
 ## Quickstart for Developers
 If you want to contribute to the development of TextSight or customize it further, follow these steps:
