@@ -1,4 +1,4 @@
-import { DocumentDetail } from 'model';
+import { DocumentDetail } from '../../../../model';
 
 const SCALING_FACTOR = 2;  // Adjust this value to increase cluster separation
 const REPULSIVE_FORCE = 20; // Increased value to set the strength of the repulsive force

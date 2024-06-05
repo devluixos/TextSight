@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Canvas, T } from '@threlte/core';
-  import { OrbitControls, interactivity, Sky, Stars, CSM } from '@threlte/extras';
+  import { OrbitControls, interactivity, Sky, Stars, ContactShadows, Environment } from '@threlte/extras';
   import { DocumentDetail } from 'model';
-  import { runLayout } from './calculatePositions';
+  import { runLayout } from './Calculations/calculatePositions';
   import { fetchDetailedDocumentData } from 'sqlite/sqlHandler';
-  import { Vector3 } from 'three';
   import DocumentScene from './DocumentScene.svelte';
+  import skybox from '../assets/skyboxes/skybox.glb';
 
   let documents: DocumentDetail[] = [];
   let nodePositions: { [key: string]: { x: number, y: number, z: number } } = {};
@@ -17,7 +17,8 @@
     azimuth: 180,
     elevation: 0.5,
     mieCoefficient: 0.005,
-    mieDirectionalG: 0.7
+    mieDirectionalG: 0.7,
+    exposure: 0.7
   };
 
   async function initializeVisualization() {
@@ -32,12 +33,6 @@
 </script>
 
 <Canvas>
-  <CSM
-    enabled
-    args={{
-      lightDirection: new Vector3(1, -1, 1).normalize()
-    }}
-  >
     {interactivity()}
     <T.PerspectiveCamera
       makeDefault
@@ -46,8 +41,24 @@
     >
       <OrbitControls />
     </T.PerspectiveCamera>
-    <T.AmbientLight intensity={0.3} />
-    <T.DirectionalLight position={[3, 10, 7]} intensity={0.1} />
+    <T.AmbientLight intensity={0.2} />
+    <T.DirectionalLight
+      position={[10, 20, 10]}
+      intensity={1.3}
+      castShadow
+      shadow-mapSize-width={2048}
+      shadow-mapSize-height={2048}
+    />
+    <ContactShadows
+      scale={50}
+      blur={0.5}
+      far={10}
+      opacity={0.6}
+      position={[0, -0.05, 0]} 
+    />
+
+    <Environment files={skybox} />
+
     <Stars />
 
     <Sky
@@ -61,8 +72,6 @@
     />
 
     <DocumentScene {documents} {nodePositions} />
-
-  </CSM>
 </Canvas>
 
 <style>

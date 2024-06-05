@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { T, useFrame } from '@threlte/core';
-  import { ClusterCenter, DocumentDetail } from 'model';
+  import { DocumentDetail } from 'model';
   import * as THREE from 'three';
-  import { writable, get } from 'svelte/store';
+  import { writable } from 'svelte/store';
   import {
     distance_threshold,
     min_visibility_distance,
@@ -13,11 +12,10 @@
     selectedDocument
   } from './parameters';
   import Modal from './Modal.svelte';
-  import { calculateClusters, clusterCenters } from './calculateClusters';
-  import { generateIslandData } from './islandsPlacement';
+  import { calculateClusters, clusterCenters } from './Calculations/calculateClusters';
+  import { generateIslandData } from './Calculations/islandsPlacement';
   import ClusterTitle from './TextElements/ClusterTitle.svelte';
   import DocumentTitle from './TextElements/DocumentTitle.svelte';
-  import { Billboard, Text } from '@threlte/extras';
 
     // Models
   import tree1 from './ConvertedElements/tree1.svelte';

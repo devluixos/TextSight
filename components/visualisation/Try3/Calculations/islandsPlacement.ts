@@ -1,6 +1,6 @@
-import island1 from './ConvertedElements/island1.svelte';
-import island2 from './ConvertedElements/island2.svelte';
-import island3 from './ConvertedElements/island3.svelte';
+import island1 from '../ConvertedElements/island1.svelte';
+import island2 from '../ConvertedElements/island2.svelte';
+import island3 from '../ConvertedElements/island3.svelte';
 import { ClusterCenter, DocumentDetail } from 'model';
 
 const ISLAND1_SCALE = 15; // Adjust this scale as needed

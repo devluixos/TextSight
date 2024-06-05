@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { writable } from 'svelte/store';
-import { ClusterCenter, DocumentDetail } from 'model';
+import { ClusterCenter, DocumentDetail } from '../../../../model';
 
 export const clusterCenters = writable<{ [key: string]: ClusterCenter }>({});
 
@@ -13,7 +13,6 @@ export function calculateClusters(
   maxClusterVisibilityDistance: number
 ) {
   const clusters: { x: number; y: number; z: number; documents: DocumentDetail[]; }[] = [];
-  const clusterMap: { [key: string]: boolean } = {};
 
   documents.forEach(doc => {
     const docPosition = new THREE.Vector3(
@@ -54,7 +53,8 @@ export function calculateClusters(
       y: cluster.y,
       z: cluster.z,
       topics: sortedTopics.slice(0, 3),
-      visible: distance >= minClusterVisibilityDistance && distance <= maxClusterVisibilityDistance
+      visible: distance >= minClusterVisibilityDistance && distance <= maxClusterVisibilityDistance,
+      documents: cluster.documents
     };
   });
 
