@@ -1,6 +1,6 @@
 <script lang="ts">
   import { T, useFrame } from '@threlte/core';
-  import { DocumentDetail } from 'model';
+  import { ClusterCenter, DocumentDetail } from 'model';
   import * as THREE from 'three';
   import { writable } from 'svelte/store';
   import {
@@ -42,23 +42,23 @@
   let currentMinClusterVisibilityDistance: number;
   let currentMaxClusterVisibilityDistance: number;
 
-  distance_threshold.subscribe(value => {
+  distance_threshold.subscribe((value: number) => {
     currentDistanceThreshold = value;
   });
 
-  min_visibility_distance.subscribe(value => {
+  min_visibility_distance.subscribe((value: number) => {
     currentMinVisibilityDistance = value;
   });
 
-  cluster_radius.subscribe(value => {
+  cluster_radius.subscribe((value: number) => {
     currentClusterRadius = value;
   });
 
-  min_cluster_visibility_distance.subscribe(value => {
+  min_cluster_visibility_distance.subscribe((value: number) => {
     currentMinClusterVisibilityDistance = value;
   });
 
-  max_cluster_visibility_distance.subscribe(value => {
+  max_cluster_visibility_distance.subscribe((value: number) => {
     currentMaxClusterVisibilityDistance = value;
   });
 
@@ -89,7 +89,7 @@
     return { ...models[randomIndex], rotation };
   }
 
-  clusterCenters.subscribe(value => {
+  clusterCenters.subscribe((value: { [key: string]: ClusterCenter; }) => {
     const islandData = generateIslandData(value, documents, nodePositions);
     islands.set(islandData);
   });

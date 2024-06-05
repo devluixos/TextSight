@@ -2,13 +2,8 @@
   import { onMount } from 'svelte';
   import { handleAnalyseConnections } from '../../../nlp/nlpService';
   import { dropConnections } from 'sqlite/sqlHandler';
-  import Scene from '../../visualisation/Scene.svelte';
 
-  import { 
-    width, height, maxIterations, scale, 
-    connectionStrength, repulsionStrength, 
-    clusterRepulsionStrength, centralAttractionStrength, minDistance 
-  } from '../../visualisation/parameters';
+
 
   type SceneComponent = {
     initializeVisualization: () => void;
@@ -16,11 +11,7 @@
 
   let sceneRef: SceneComponent | null = null;
 
-  function reloadVisualization() {
-    if (sceneRef) {
-      sceneRef.initializeVisualization();
-    }
-  }
+
 
   function onTextSightTabClick() {
     let textSightLeaf = this.app.workspace.getLeavesOfType('my-visualisation')[0];
@@ -38,6 +29,7 @@
 </script>
 
 <style>
+/*
   .slider-container {
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
@@ -53,13 +45,18 @@
   .value-label {
     text-align: right;
   }
+*/
 </style>
+
 
 <div class="content textsight-content">
   <h3>Analyse the connections!</h3>
   <button on:click={() => handleAnalyseConnections()}>Analyse Connections</button>
   <button on:click={() => dropConnections()}>Drop Connections</button>
+</div>
 
+
+  <!--
   <div class="slider-container">
     <label for="width">Width</label>
     <input id="width" type="range" min="50" max="500" step="10" bind:value={$width} on:input={() => reloadVisualization()} />
@@ -114,3 +111,4 @@
     <span class="value-label">{$minDistance}</span>
   </div>
 </div>
+-->
