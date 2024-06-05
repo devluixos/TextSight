@@ -83,19 +83,27 @@ TextSight currently uses OpenAI's GPT-4o model, so you need an API key. If you c
 ## Acknowledgments
 #### Islands
 Island by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/C03O8OQq6O)
+
 Medium Island by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/YFs6J9xPdZ)
+
 Large Island by J-Toastie [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/jLjH1jMIpH)
 
 #### Trees
 Tree by Marc Solà [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/6Yjt8nIwLsD)
+
 Big Tree by 3Donimus [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dNWh762PN-6)
+
 Pine Tree by Danni Bittman [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2Qo-fmVKuSG)
+
 Tree Fall by Kenney (https://poly.pizza/m/XMvD3AilGv)
+
 Willow tree by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/2acu5nrdDYl)
 
 #### Rocks
 Rock Large by Quaternius (https://poly.pizza/m/54jZKTAt5p)
+
 Rock by Quaternius (https://poly.pizza/m/HtpdTh3Ld6)
+
 Rock by Quaternius (https://poly.pizza/m/4MUaQTcDdc)
 
 #### House 
