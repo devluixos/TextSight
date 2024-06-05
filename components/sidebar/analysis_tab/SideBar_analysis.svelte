@@ -8,6 +8,7 @@
     import type { EventRef } from 'obsidian';
     import { callGPT4 } from '../../../nlp/nlpService';
     import { logDatabaseContent, saveAnalysisResults, checkIfLeafExistsInDatabase } from '../../../sqlite/sqlHandler';
+    import SettingsModal from './SettingsModal.svelte';
   
     let openLeaves: any[] = [];
     let selectedLeaf = writable<any | null>(null);
@@ -39,6 +40,7 @@
     ];
     let loadingMessage = '';
     let loadingMessageInterval: any;
+    let showModal = writable(false);
   
     function handleLeafSelection() { 
       currentLeaf = get(selectedLeaf);
@@ -136,7 +138,14 @@
     <div class="database">
       <button on:click={ () => logDatabaseContent()}>DataBase</button>
     </div>
+    <div class="api-key">
+      <button on:click="{() => showModal.set(true)}">Set API Key</button>
+    </div>
   </div>
+
+  {#if $showModal}
+    <SettingsModal bind:showModal={$showModal} />
+  {/if}
   
   <style lang="scss">
     @import './SideBar_analysis.scss';
