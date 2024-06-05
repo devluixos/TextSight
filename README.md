@@ -1,5 +1,11 @@
 ![TextSight gif](https://github.com/devluixos/TextSight/blob/master/showcase_gif.gif)
 
+## Get in contact
+**Discord:**
+[Discord](https://discord.gg/FyTVuNbq)
+**Blog:**
+[here](https://publish.obsidian.md/luix/)
+
 ## TextSight
 TextSight is an Obsidian plugin that leverages OpenAI's advanced language models to analyze your notes and uncover connections based on topics, keywords, and named entities. It utilizes Dexie.js as a wrapper for IndexedDB, facilitating efficient data management and retrieval within the plugin. TextSight helps you visualize these connections in a 3D environment, providing a holistic view of your research or notes. This tool is designed to assist you in discovering hidden insights, navigating through your ideas, and gaining a deeper understanding of your data.
 
@@ -65,7 +71,7 @@ npm run dev
 ```
 
 **Make Your Changes:**
-Implement your features or bug fixes. Ensure that your code follows the project's coding standards and guidelines.
+Implement your features or bug fixes. Ensure that your code follows common sense.
 
 Commit and Push:
 Commit your changes and push them to your forked repository:
@@ -79,13 +85,13 @@ Create a pull request to the main repository. Provide a detailed description of 
 
 ## Contributing
 
-We welcome contributions from the community! Whether you're a developer, designer, or tester, there's a place for you in the TextSight project. Check out our GitHub Issues for tasks that need attention.
+We welcome contributions from the community! Whether you're a developer, designer, or tester, there's a place for you in the TextSight project. Check out our [Discord](https://discord.gg/FyTVuNbq)
 
-If you'd like to write some code but don't know where to start, we've written some ToDos.
+If you'd like to write some code but don't know where to start, we've written some [ToDos](https://publish.obsidian.md/luix/Master+Thesis/TextSight_Publish/Development/1+Introduction.).
 
 ## Feedback and Testing
 
-Testers are always welcome. Give TextSight a try, analyze a few documents, and provide feedback (preferably on Discord). Your insights are invaluable in making TextSight better.
+Testers are always welcome. Give TextSight a try, analyze a few documents, and provide feedback (preferably on [Discord](https://discord.gg/FyTVuNbq)). Your insights are invaluable in making TextSight better.
 
 TextSight currently uses OpenAI's GPT-4o model, so you need an API key. If you cannot get one, we have a few keys with a $5 budget each for you. With $5 you'll be able to analyze a significant number of documents.
 
