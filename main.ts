@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, Plugin, addIcon, FileSystemAdapter, Notice } from 'obsidian';
+import { ItemView, WorkspaceLeaf, Plugin, addIcon, FileSystemAdapter, Notice, App } from 'obsidian';
 import { StatusBar } from './components/statusbar/StatusBar';
 import { Sidebar } from './components/sidebar/SideBar';
 import { Visualisation } from './components/visualisation/Visualisation';
@@ -107,15 +107,21 @@ export default class MyPlugin extends Plugin {
 }
 
 export async function createEnvFile() {
-    //creating env file if not exists
-    let adapter = app.vault.adapter;
-    let envPath = '';
-    if (adapter instanceof FileSystemAdapter) {
+    try {
+      let adapter = app.vault.adapter;
+      let envPath = '';
+  
+      if (adapter instanceof FileSystemAdapter) {
         envPath = adapter.getBasePath();
-    }
-    envPath = path.join(envPath, './.obsidian/plugins/TextSight/.env');
-    if (!fs.existsSync(envPath)) {
-        fs.writeFileSync(envPath, 'OPENAI_API_KEY=ADD KEY HERE'); // Creates the .env file with a placeholder for the API key
+      }
+  
+      envPath = path.join(envPath, './.obsidian/plugins/TextSight/.env');
+  
+      if (!fs.existsSync(envPath)) {
+        fs.writeFileSync(envPath, 'OPENAI_API_KEY=ADD_KEY_HERE');
         new Notice('A .env file has been created in the root of this plugin. Please add your API key for the TextSight plugin.');
-    }    
-}
+      }    
+    } catch (error) {
+      console.error('Error creating .env file:', error);
+    }
+  }

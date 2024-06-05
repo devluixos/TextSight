@@ -9,32 +9,24 @@ import { createEnvFile } from 'main';
 /**
  * GPT API SETUP
  */
-let openai: any;
-function checkEnvFile() {
-  createEnvFile().then(() => {
-    const basePath = (app.vault.adapter as any).basePath
-    //Load environment variables
-    dotenv.config({
-      path: `${basePath}/.obsidian/plugins/TextSight/.env`,
-      debug: false
-    })
-    // Rest of your code
-  });
 
-  // Check if OPENAI_API_KEY is defined
-  if (!process.env.OPENAI_API_KEY) {
-    console.log('The OPENAI_API_KEY environment variable is not defined');  
-    throw new Error('The OPENAI_API_KEY environment variable is not defined');
-  }
+const basePath = (app.vault.adapter as any).basePath
+//Load environment variables
+dotenv.config({
+  path: `${basePath}/.obsidian/plugins/TextSight/.env`,
+  debug: false
+ })
 
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true
-  });
-
+// Check if OPENAI_API_KEY is defined
+if (!process.env.OPENAI_API_KEY) {
+  console.log('The OPENAI_API_KEY environment variable is not defined');  
+  throw new Error('The OPENAI_API_KEY environment variable is not defined');
 }
 
-
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true
+});
 /**
  * This uses the prompt to analyse a text using the GPT-4 model
  * @param promptText The text of the prompt to be sent to the GPT-4 model
