@@ -19,6 +19,7 @@ For that, you have to open the sidebar either through a click on the icon on the
 
 ## Installation
 #### For General Users
+All of this happens in the command line. If you have not installed it go [here](https://github.com/git-guides/install-git). Open the command line and navigate to your Vault.
 
 **Clone the Plugin**
 Navigate to your Obsidian vault's plugins folder. This is typically located in your vault's root directory under `.obsidian/plugins/.` Clone the TextSight repository into this directory using the following command:
@@ -33,6 +34,13 @@ Run the following command to install the necessary dependencies:
 
 ```bash
 npm install
+```
+
+**Run the build for the plugin**
+The last step is to create a build of the code for it to work inside obsidian:
+
+```bash
+npm run build
 ```
 
 **Enable in Obsidian:**
