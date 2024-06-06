@@ -201,6 +201,46 @@ export async function fetchDocumentDataById(documentId: string): Promise<Documen
   };
 }
 
+/**
+ * CRUD OPERATIONS FOR ENTITY
+ */
+export async function fetchEntitiesByDocumentId(documentId: string): Promise<Entity[]> {
+  return await db.entities.where({ documentId }).toArray();
+}
+
+export async function updateEntity(documentId: string, updatedEntity: any) {
+  await db.entities.update(updatedEntity.id, { ...updatedEntity, documentId });
+}
+
+export async function deleteEntity(documentId: string, entityId: number) {
+  await db.entities.delete(entityId);
+}
+
+export async function addEntity(documentId: string, entity: any) {
+  await db.entities.add({ ...entity, documentId });
+}
+
+/**
+ * CRUD OPERATIONS FOR KEYWORD
+ */
+export async function fetchKeywordsByDocumentId(documentId: string): Promise<Keyword[]> {
+  return await db.keywords.where({ documentId }).toArray();
+}
+
+export async function updateKeyword(documentId: string, updatedKeyword: any) {
+  await db.keywords.update(updatedKeyword.id, { ...updatedKeyword, documentId });
+}
+
+export async function deleteKeyword(documentId: string, keywordId: number) {
+  await db.keywords.delete(keywordId);
+}
+
+export async function addKeyword(documentId: string, keyword: any) {
+  await db.keywords.add({ ...keyword, documentId });
+}
+
+
+
 export async function dropConnections() {
   await db.transaction('rw', db.documentConnections, async () => {
     await db.documentConnections.clear();

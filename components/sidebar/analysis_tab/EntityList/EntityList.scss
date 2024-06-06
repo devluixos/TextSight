@@ -1,0 +1,74 @@
+// ENTITIES TABLE
+.entities-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.entities-table thead {
+  display: flex;
+  width: 100%;
+}
+
+.entities-table tbody {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.entities-table tr {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.entities-table th, .entities-table td {
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 8px;
+    word-wrap: break-word;
+    min-width: 100px; // Ensures the cells don't get too small
+    overflow: hidden;
+    text-overflow: ellipsis; // This will add ellipsis (...) for overflowing text
+    white-space: nowrap; // This will prevent text from wrapping to the next line
+}
+
+.entities-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: var(--color-purple);
+    color: white;
+    cursor: pointer;
+}
+
+.entities-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.entities-table tr:hover {
+  background-color: #ddd;
+}
+
+@media (max-width: 600px) {
+  .entities-table th, .entities-table td {
+      padding: 4px;
+  }
+
+  .entities-table th {
+      font-size: 12px;
+  }
+}
+
+// Save indicator for the header
+.save-indicator {
+    background-color: var(--color-purple);
+}
+
+// Highlight input field when saved
+.input-updated {
+    border-color: green;
+    transition: border-color 2s;
+}
