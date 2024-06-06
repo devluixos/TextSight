@@ -4,7 +4,7 @@
   import DocumentControl from './DocumentControl.svelte';
   import EntityList from './EntityList/EntityList.svelte';
   import KeywordList from './KeywordList/KeywordList.svelte';
-  import TopicList from './TopicList.svelte';
+  import TopicList from './TopicList/TopicList.svelte';
   import ConnectionList from './ConnectionList.svelte';
 
 
@@ -43,7 +43,7 @@
   <div>
     <button on:click={() => isTopicsOpen.set(!get(isTopicsOpen))}>Topics</button>
     {#if $isTopicsOpen}
-      <TopicList documentId={$selectedLeaf?.id} />
+      <TopicList />
     {/if}
   </div>
   <div>
