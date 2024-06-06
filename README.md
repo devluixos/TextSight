@@ -1,10 +1,9 @@
 ![TextSight gif](https://github.com/devluixos/TextSight/blob/master/showcase_gif.gif)
 
 ## Get in contact
-**Discord:**
-[Discord](https://discord.gg/FyTVuNbq)
-**Blog:**
-[here](https://publish.obsidian.md/luix/)
+**[Discord](https://discord.com/invite/bsECGrvScp)**
+
+**[Blog](https://publish.obsidian.md/luix/)**
 
 ## TextSight
 TextSight is an Obsidian plugin that leverages OpenAI's advanced language models to analyze your notes and uncover connections based on topics, keywords, and named entities. It utilizes Dexie.js as a wrapper for IndexedDB, facilitating efficient data management and retrieval within the plugin. TextSight helps you visualize these connections in a 3D environment, providing a holistic view of your research or notes. This tool is designed to assist you in discovering hidden insights, navigating through your ideas, and gaining a deeper understanding of your data.
