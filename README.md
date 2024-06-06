@@ -84,13 +84,13 @@ Create a pull request to the main repository. Provide a detailed description of 
 
 ## Contributing
 
-We welcome contributions from the community! Whether you're a developer, designer, or tester, there's a place for you in the TextSight project. Check out our [Discord](https://discord.gg/FyTVuNbq)
+We welcome contributions from the community! Whether you're a developer, designer, or tester, there's a place for you in the TextSight project. Check out our [Discord](https://discord.com/invite/bsECGrvScp))
 
 If you'd like to write some code but don't know where to start, we've written some [ToDos](https://publish.obsidian.md/luix/Master+Thesis/TextSight_Publish/Development/1+Introduction.).
 
 ## Feedback and Testing
 
-Testers are always welcome. Give TextSight a try, analyze a few documents, and provide feedback (preferably on [Discord](https://discord.gg/FyTVuNbq)). Your insights are invaluable in making TextSight better.
+Testers are always welcome. Give TextSight a try, analyze a few documents, and provide feedback (preferably on [Discord](https://discord.com/invite/bsECGrvScp)). Your insights are invaluable in making TextSight better.
 
 TextSight currently uses OpenAI's GPT-4o model, so you need an API key. If you cannot get one, we have a few keys with a $5 budget each for you. With $5 you'll be able to analyze a significant number of documents.
 
