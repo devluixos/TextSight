@@ -1,32 +1,32 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { EventRef } from 'obsidian';
-  import { fetchKeywordsByDocumentId, updateKeyword, deleteKeyword, addKeyword } from '../../../../sqlite/sqlHandler';
+  import { fetchTopicsByDocumentId, updateTopic, deleteTopic, addTopic } from '../../../../sqlite/sqlHandler';
   import { get, writable } from 'svelte/store';
   import Toast from '../Toast.svelte';
 
   let documentId: string = '';
   let activeLeaf: any;
-  let keywords = writable<any[]>([]);
-  let sortedKeywords = writable<any[]>([]);
+  let topics = writable<any[]>([]);
+  let sortedTopics = writable<any[]>([]);
   let sortColumn = writable<string | null>(null);
   let sortDirection = writable<'asc' | 'desc'>('asc');
   let saveIndicator = writable(false); // Indicator for save feedback
-  let newKeyword = writable({ keyword: '', weight: 0 });
+  let newTopic = writable({ name: '', weight: 0 });
   let message = writable<string>('');
 
   async function updateActiveLeaf() {
       activeLeaf = app.workspace.activeLeaf;
       if (activeLeaf && activeLeaf.view && activeLeaf.view.file && activeLeaf.view.file.extension === 'md') {
           documentId = activeLeaf.view.file.path;
-          await loadKeywords();
+          await loadTopics();
       }
   }
 
-  async function loadKeywords() {
-      const data = await fetchKeywordsByDocumentId(documentId);
-      keywords.set(data);
-      sortedKeywords.set(data);
+  async function loadTopics() {
+      const data = await fetchTopicsByDocumentId(documentId);
+      topics.set(data);
+      sortedTopics.set(data);
   }
 
   let unsubscribeActiveLeafChange: EventRef;
@@ -42,7 +42,7 @@
 
   function sortTable(column: string) {
       sortDirection.update(direction => direction === 'asc' ? 'desc' : 'asc');
-      sortedKeywords.update(data => {
+      sortedTopics.update(data => {
           const sorted = [...data].sort((a, b) => {
               if (a[column] < b[column]) return get(sortDirection) === 'asc' ? -1 : 1;
               if (a[column] > b[column]) return get(sortDirection) === 'asc' ? 1 : -1;
@@ -52,45 +52,45 @@
       });
   }
 
-  async function handleAddKeyword() {
-      const keyword = get(newKeyword);
-      if (keyword.weight < 0 || keyword.weight > 1) {
+  async function handleAddTopic() {
+      const topic = get(newTopic);
+      if (topic.weight < 0 || topic.weight > 1) {
           message.set('Weight must be between 0 and 1');
           return;
       }
       try {
-          await addKeyword(documentId, keyword);
-          await loadKeywords();
-          newKeyword.set({ keyword: '', weight: 0 });
+          await addTopic(documentId, topic);
+          await loadTopics();
+          newTopic.set({ name: '', weight: 0 });
           indicateSave();
-          message.set('Keyword added successfully');
+          message.set('Topic added successfully');
       } catch (error) {
-          message.set('Error adding keyword');
+          message.set('Error adding topic');
       }
   }
 
-  async function handleUpdateKeyword(updatedKeyword: any, inputElement: HTMLInputElement) {
-      if (updatedKeyword.weight < 0 || updatedKeyword.weight > 1) {
+  async function handleUpdateTopic(updatedTopic: any, inputElement: HTMLInputElement) {
+      if (updatedTopic.weight < 0 || updatedTopic.weight > 1) {
           message.set('Weight must be between 0 and 1');
           return;
       }
       try {
-          await updateKeyword(documentId, updatedKeyword);
-          await loadKeywords();
+          await updateTopic(documentId, updatedTopic);
+          await loadTopics();
           indicateInputSave(inputElement);
-          message.set('Keyword updated successfully');
+          message.set('Topic updated successfully');
       } catch (error) {
-          message.set('Error updating keyword');
+          message.set('Error updating topic');
       }
   }
 
-  async function handleDeleteKeyword(id: number) {
+  async function handleDeleteTopic(id: number) {
       try {
-          await deleteKeyword(documentId, id);
-          await loadKeywords();
-          message.set('Keyword deleted successfully');
+          await deleteTopic(documentId, id);
+          await loadTopics();
+          message.set('Topic deleted successfully');
       } catch (error) {
-          message.set('Error deleting keyword');
+          message.set('Error deleting topic');
       }
   }
 
@@ -110,35 +110,36 @@
 </script>
 
 <div>
-  <h3 class:save-indicator={$saveIndicator}>Keywords for {documentId}</h3>
-  <table class="keywords-table">
+  <h3 class:save-indicator={$saveIndicator}>Topics for {documentId}</h3>
+  <table class="topics-table">
       <thead>
           <tr>
-              <th on:click={() => sortTable('keyword')}>Keyword</th>
+              <th on:click={() => sortTable('name')}>Name</th>
               <th on:click={() => sortTable('weight')}>Weight</th>
               <th>Actions</th>
           </tr>
       </thead>
       <tbody>
-          {#each $sortedKeywords as keyword, i}
+          {#each $sortedTopics as topic, i}
               <tr>
-                  <td><input type="text" bind:value={keyword.keyword} on:change={(e) => handleUpdateKeyword(keyword, e.currentTarget)} /></td>
-                  <td><input type="number" bind:value={keyword.weight} min="0" max="1" step="0.01" on:change={(e) => handleUpdateKeyword(keyword, e.currentTarget)} /></td>
-                  <td><button on:click={() => handleDeleteKeyword(keyword.id)}>Delete</button></td>
+                  <td><input type="text" bind:value={topic.name} on:change={(e) => handleUpdateTopic(topic, e.currentTarget)} /></td>
+                  <td><input type="number" bind:value={topic.weight} min="0" max="1" step="0.01" on:change={(e) => handleUpdateTopic(topic, e.currentTarget)} /></td>
+                  <td><button on:click={() => handleDeleteTopic(topic.id)}>Delete</button></td>
               </tr>
           {/each}
       </tbody>
   </table>
 
-  <h4>Add New Keyword</h4>
+  <h4>Add New Topic</h4>
   <div>
-      <input type="text" placeholder="Keyword" bind:value={$newKeyword.keyword} />
-      <input type="number" placeholder="Weight" bind:value={$newKeyword.weight} min="0" max="1" step="0.01" />
-      <button on:click={handleAddKeyword}>Add Keyword</button>
+      <input type="text" placeholder="Name" bind:value={$newTopic.name} />
+      <input type="number" placeholder="Weight" bind:value={$newTopic.weight} min="0" max="1" step="0.01" />
+      <button on:click={handleAddTopic}>Add Topic</button>
   </div>
   <Toast {message} />
 </div>
 
 <style lang="scss">
-    @import './KeywordList.scss';
+    @import './TopicList.scss';
 </style>
+  

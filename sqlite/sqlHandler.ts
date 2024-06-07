@@ -239,6 +239,25 @@ export async function addKeyword(documentId: string, keyword: any) {
   await db.keywords.add({ ...keyword, documentId });
 }
 
+/**
+ * CRUD OPERATIONS FOR TOPIC
+ */
+export async function fetchTopicsByDocumentId(documentId: string): Promise<Topic[]> {
+  return await db.topics.where({ documentId }).toArray();
+}
+
+export async function updateTopic(documentId: string, updatedTopic: any) {
+  await db.topics.update(updatedTopic.id, { ...updatedTopic, documentId });
+}
+
+export async function deleteTopic(documentId: string, topicId: number) {
+  await db.topics.delete(topicId);
+}
+
+export async function addTopic(documentId: string, topic: any) {
+  await db.topics.add({ ...topic, documentId });
+}
+
 
 
 export async function dropConnections() {
