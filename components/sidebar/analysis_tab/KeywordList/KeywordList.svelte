@@ -140,5 +140,5 @@
 </div>
 
 <style lang="scss">
-  @import './KeywordList.scss';
+    @import './KeywordList.scss';
 </style>

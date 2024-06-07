@@ -1,30 +1,30 @@
-// KEYWORDS TABLE
-.keywords-table {
+// TOPICS TABLE
+.topics-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
     display: flex;
     flex-direction: column;
-}
-
-.keywords-table thead {
+  }
+  
+  .topics-table thead {
     display: flex;
     width: 100%;
-}
-
-.keywords-table tbody {
+  }
+  
+  .topics-table tbody {
     display: flex;
     flex-direction: column;
     width: 100%;
-}
-
-.keywords-table tr {
+  }
+  
+  .topics-table tr {
     display: flex;
     width: 100%;
     justify-content: space-between;
-}
-
-.keywords-table th, .keywords-table td {
+  }
+  
+  .topics-table th, .topics-table td {
     flex: 1;
     border: 1px solid #ddd;
     padding: 8px;
@@ -33,36 +33,37 @@
     overflow: hidden;
     text-overflow: ellipsis; // This will add ellipsis (...) for overflowing text
     white-space: nowrap; // This will prevent text from wrapping to the next line
-}
-
-.keywords-table th {
+  }
+  
+  .topics-table th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
     background-color: var(--color-purple);
     color: white;
     cursor: pointer;
-}
-
-.keywords-table tr:nth-child(even) {
+  }
+  
+  .topics-table tr:nth-child(even) {
     background-color: #f9f9f9;
-}
-
-.keywords-table tr:hover {
+  }
+  
+  .topics-table tr:hover {
     background-color: #ddd;
-}
-
-@media (max-width: 600px) {
-    .keywords-table th, .keywords-table td {
-        padding: 4px;
+  }
+  
+  @media (max-width: 600px) {
+    .topics-table th, .topics-table td {
+      padding: 4px;
     }
-
-    .keywords-table th {
-        font-size: 12px;
+  
+    .topics-table th {
+      font-size: 12px;
     }
-}
-
-// Save indicator for the header
-.save-indicator {
+  }
+  
+  // Save indicator for the header
+  .save-indicator {
     background-color: var(--color-purple);
-}
+  }
+  
