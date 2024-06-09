@@ -43,6 +43,7 @@ export interface IDocumentConnection {
     connectedDocumentId: string;
     connectionType: string;
     sharedAttributes: string[];
+    weight: number;
 }
 
 export class NodeModel {

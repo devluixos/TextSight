@@ -132,16 +132,24 @@
         </tbody>
     </table>
 
-    <h4>Add New Entity</h4>
-    <div>
-        <input type="text" placeholder="Text" bind:value={$newEntity.text} />
-        <input type="text" placeholder="Type" bind:value={$newEntity.type} />
-        <input type="number" placeholder="Weight" bind:value={$newEntity.weight} min="0" max="1" step="0.01" />
+    <div class="add-entity-container">
+        <label>
+            Text:
+            <input type="text" placeholder="Text" bind:value={$newEntity.text} />
+        </label>
+        <label>
+            Type:
+            <input type="text" placeholder="Type" bind:value={$newEntity.type} />
+        </label>
+        <label>
+            Weight:
+            <input type="number" placeholder="Weight" bind:value={$newEntity.weight} min="0" max="1" step="0.01" />
+        </label>
         <button on:click={handleAddEntity}>Add Entity</button>
     </div>
     <Toast {message} />
 </div>
 
 <style lang="scss">
-    @import './EntityList.scss';
+  @import './EntityList.scss';
 </style>

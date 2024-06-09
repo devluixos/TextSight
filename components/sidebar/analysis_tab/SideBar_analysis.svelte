@@ -5,7 +5,7 @@
   import EntityList from './EntityList/EntityList.svelte';
   import KeywordList from './KeywordList/KeywordList.svelte';
   import TopicList from './TopicList/TopicList.svelte';
-  import ConnectionList from './ConnectionList.svelte';
+  import ConnectionList from './ConnectionList/ConnectionList.svelte';
 
 
   let selectedLeaf = writable<any | null>(null);
@@ -49,7 +49,7 @@
   <div>
     <button on:click={() => isConnectionsOpen.set(!get(isConnectionsOpen))}>Connected Documents</button>
     {#if $isConnectionsOpen}
-      <ConnectionList documentId={$selectedLeaf?.id} />
+      <ConnectionList />
     {/if}
   </div>
 </div>
