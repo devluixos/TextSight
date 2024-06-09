@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { Document, Entity, Topic, Keyword, DocumentAnalysis, NodeModel, DocumentDetail } from '../model';
+import { Document, Entity, Topic, Keyword, DocumentAnalysis, NodeModel, DocumentDetail, DocumentConnection, IDocumentConnection } from '../model';
 
 
 class TextAnalysisDB extends (Dexie as any) {
@@ -129,6 +129,10 @@ export async function saveAnalysisResults(leafId: any, apiResponse: any) {
 }
 
 
+export async function fetchAllDocumentIds(): Promise<string[]> {
+  const documents = await db.documents.toArray();
+  return documents.map((doc: { documentId: any; }) => doc.documentId);
+}
 
 
   export async function fetchAllDocumentData(): Promise<DocumentAnalysis[]> {
@@ -257,6 +261,44 @@ export async function deleteTopic(documentId: string, topicId: number) {
 export async function addTopic(documentId: string, topic: any) {
   await db.topics.add({ ...topic, documentId });
 }
+
+/**
+ * CRUD OPERATIONS FOR CONNECTIONS
+ */
+// Add a connection
+export async function addConnection(documentId: string, connection: IDocumentConnection): Promise<void> {
+  await db.documentConnections.add({ ...connection, documentId });
+}
+
+// Fetch connections by document ID
+export async function fetchConnectionsByDocumentId(documentId: string): Promise<IDocumentConnection[]> {
+  const connections = await db.documentConnections.where({ documentId }).toArray();
+  const detailedConnections = await Promise.all(connections.map(async (conn: IDocumentConnection) => ({
+    ...conn,
+    connectedDocument: await db.documentConnections.where({ documentId: conn.connectedDocumentId }).first()
+  })));
+  return detailedConnections;
+}
+
+// Delete a shared attribute
+export async function deleteSharedAttribute(documentId: string, connectedDocumentId: string, attribute: string): Promise<void> {
+  const connection = await db.documentConnections.where({ documentId, connectedDocumentId }).first();
+  if (connection) {
+    const updatedAttributes = connection.sharedAttributes.filter((attr: string) => attr !== attribute);
+    if (updatedAttributes.length === 0) {
+      await db.documentConnections.delete(connection.id);
+    } else {
+      await db.documentConnections.update(connection.id, { sharedAttributes: updatedAttributes });
+    }
+  }
+}
+
+
+// Update a connection
+export async function updateConnection(updatedConnection: IDocumentConnection): Promise<void> {
+  await db.documentConnections.update(updatedConnection.id, updatedConnection);
+}
+
 
 
 
