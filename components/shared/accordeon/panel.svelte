@@ -3,26 +3,26 @@
 	import type { AccordeonContext } from "./context";
 
 	export let id: string = "" + Math.random();
+	export let label: string = "";
 
 	let isOpened: boolean = false;
-
-	/**
-	 * - Create context in panel
-	 * - child component takes context.
-	 * -
-	 */
+	let context: AccordeonContext;
 
 	onMount(() => {
-		const context = getContext<AccordeonContext>("accordeon");
-		context.register(id);
+		context = getContext<AccordeonContext>("accordeon");
 		context.activeId.subscribe((activeId) => (isOpened = activeId === id));
 	});
 
-	let className = "panel" + (isOpened ? " open" : "");
+	let className = "section" + (isOpened ? " open" : "");
 </script>
 
 <div class={className} {id}>
+	<button class="section-header" on:click={() => context.activate(id)}>
+		<h3>{label}</h3>
+	</button>
 	{#if isOpened}
-		<slot></slot>
+		<div class="section-content">
+			<slot></slot>
+		</div>
 	{/if}
 </div>
