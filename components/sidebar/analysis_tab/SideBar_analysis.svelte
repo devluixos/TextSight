@@ -6,6 +6,7 @@
   import KeywordList from './KeywordList/KeywordList.svelte';
   import TopicList from './TopicList/TopicList.svelte';
   import ConnectionList from './ConnectionList/ConnectionList.svelte';
+  import AnalyseDocument from './AnalyseDocument/AnalyseDocument.svelte';
 
 
   let selectedLeaf = writable<any | null>(null);
@@ -25,7 +26,7 @@
 
 </script>
 
-<DocumentControl />
+<AnalyseDocument />
 
 <div class="accordion">
   <div>
