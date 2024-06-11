@@ -1,0 +1,156 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    width: 100%;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: var(--text-normal);
+    text-align: center;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    background-color: var(--background-primary);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.controls label {
+    margin-right: 10px;
+}
+
+.controls select {
+    padding: 10px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 300px;
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    font-size: 1em;
+    min-height: 40px; /* Ensures a minimum height */
+    white-space: pre-wrap; /* Allows the text to wrap */
+    overflow-wrap: break-word; /* Breaks long words to fit in the container */
+    word-wrap: break-word; /* Support for older browsers */
+    height: auto; /* Allow height to adjust automatically */
+    display: block; /* Ensures block display */
+}
+
+.controls option {
+    color: var(--text-normal);
+    background-color: var(--background-primary);
+    white-space: pre-wrap; /* Allows the text to wrap */
+    overflow-wrap: break-word; /* Breaks long words to fit in the container */
+    word-wrap: break-word; /* Support for older browsers */
+}
+
+.controls button {
+    padding: 10px 20px;
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+}
+
+.controls button:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    background-color: var(--background-primary);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.loading-spinner {
+    margin-bottom: 15px;
+}
+
+.loading-text {
+    color: var(--text-normal);
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.p-error {
+    color: var(--text-error);
+    font-weight: bold;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.database, .api-key {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.database button, .api-key button {
+    padding: 10px 20px;
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+}
+
+.database button:hover, .api-key button:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+@media (max-width: 600px) {
+    .controls {
+        gap: 10px;
+
+        label, select, button {
+            width: 100%;
+        }
+
+        select {
+            max-width: none;
+        }
+
+        button {
+            max-width: none;
+        }
+    }
+
+    .loading-container {
+        padding: 15px;
+    }
+
+    .loading-spinner {
+        margin-bottom: 10px;
+    }
+
+    .database button, .api-key button {
+        width: 100%;
+        max-width: none;
+    }
+}
