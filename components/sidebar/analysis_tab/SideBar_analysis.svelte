@@ -1,7 +1,6 @@
 <!-- AnalysisTab.svelte -->
 <script lang="ts">
   import { get, writable } from 'svelte/store';
-  import DocumentControl from './DocumentControl.svelte';
   import EntityList from './EntityList/EntityList.svelte';
   import KeywordList from './KeywordList/KeywordList.svelte';
   import TopicList from './TopicList/TopicList.svelte';
@@ -30,27 +29,35 @@
 
 <div class="accordion">
   <div>
-    <button on:click={() => isEntitiesOpen.set(!get(isEntitiesOpen))}>Entities</button>
+    <button class="accordion-button" on:click={() => isEntitiesOpen.set(!get(isEntitiesOpen))}>Entities</button>
     {#if $isEntitiesOpen}
-      <EntityList />
+      <div class="accordion-content">
+        <EntityList />
+      </div>
     {/if}
   </div>
   <div>
-    <button on:click={() => isKeywordsOpen.set(!get(isKeywordsOpen))}>Keywords</button>
+    <button class="accordion-button" on:click={() => isKeywordsOpen.set(!get(isKeywordsOpen))}>Keywords</button>
     {#if $isKeywordsOpen}
-      <KeywordList />
+      <div class="accordion-content">
+        <KeywordList />
+      </div>
     {/if}
   </div>
   <div>
-    <button on:click={() => isTopicsOpen.set(!get(isTopicsOpen))}>Topics</button>
+    <button class="accordion-button" on:click={() => isTopicsOpen.set(!get(isTopicsOpen))}>Topics</button>
     {#if $isTopicsOpen}
-      <TopicList />
+      <div class="accordion-content">
+        <TopicList />
+      </div>
     {/if}
   </div>
   <div>
-    <button on:click={() => isConnectionsOpen.set(!get(isConnectionsOpen))}>Connected Documents</button>
+    <button class="accordion-button" on:click={() => isConnectionsOpen.set(!get(isConnectionsOpen))}>Connected Documents</button>
     {#if $isConnectionsOpen}
-      <ConnectionList />
+      <div class="accordion-content">
+        <ConnectionList />
+      </div>
     {/if}
   </div>
 </div>
