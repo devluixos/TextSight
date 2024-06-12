@@ -39,7 +39,9 @@ export async function callGPT4(promptText: string) {
       messages: [{role: 'user', content: promptBuilder(promptText)}],
       temperature: 0.7,
     });
-    return response.choices[0].message.content;
+    const rawResults = response.choices[0].message.content;
+    const cleanedResults = rawResults ? cleanJsonResponse(rawResults) : '';
+    return cleanedResults;
   } catch (error) {
     console.error(error);
   }
