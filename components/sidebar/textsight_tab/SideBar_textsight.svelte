@@ -1,16 +1,25 @@
 <script lang="ts">
-  import { writable } from 'svelte/store';
+  import { writable, get } from 'svelte/store';
   import { onMount } from 'svelte';
   import { handleAnalyseConnections } from '../../../nlp/nlpService';
   import { Jellyfish } from 'svelte-loading-spinners';
   import Modal from './Modal/Modal.svelte';
   import Toast from '../analysis_tab/Toast.svelte';
-	import { dropConnections } from 'sqlite/sqlHandler';
+  import { dropConnections, fetchDetailedDocumentData } from '../../../sqlite/sqlHandler';
+  import FilterOptions from './Filters/FilterOptions.svelte';
+  import type { DocumentDetail } from '../../../model';
+
+  let textSearch = writable('');
+  let selectedEntities = writable([]);
+  let selectedKeywords = writable([]);
+  let selectedTopics = writable([]);
+  let dateRange = writable({ start: '', end: '' });
 
   let isLoadingConnections = writable(false);
   let loadingMessage = writable('');
   let showModal = writable(false);
   let toastMessage = writable('');
+  let documents = writable<DocumentDetail[]>([]);
   const loadingMessages = [
     "Training the AI...",
     "Building the Zettelkasten...",
@@ -54,6 +63,18 @@
       clearInterval(loadingMessageInterval);
       isLoadingConnections.set(false);
     }
+  }
+
+  async function applyFilters() {
+    const filters = {
+      textSearch: get(textSearch),
+      entities: get(selectedEntities),
+      keywords: get(selectedKeywords),
+      topics: get(selectedTopics),
+      dateRange: get(dateRange)
+    };
+    documents.set(await fetchDetailedDocumentData(filters));
+    toastMessage.set('Filters applied.');
   }
 
   function confirmDropConnections() {
@@ -103,61 +124,21 @@
     </Modal>
   {/if}
 
+  <div class="sidebar-content">
+    <h3>Filters</h3>
+    <FilterOptions 
+      bind:textSearch={textSearch} 
+      bind:selectedEntities={selectedEntities} 
+      bind:selectedKeywords={selectedKeywords} 
+      bind:selectedTopics={selectedTopics} 
+      bind:dateRange={dateRange} 
+    />
+  </div>
+  
+
   <Toast bind:message={toastMessage} />
 </div>
 
 <style lang="scss">
-  .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  h3 {
-    margin-bottom: 20px;
-    color: var(--text-normal);
-  }
-
-  button {
-    padding: 10px 20px;
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    max-width: 200px;
-    margin: 10px 0;
-    transition: background-color 0.3s ease;
-  }
-
-  button:hover {
-    background-color: var(--interactive-accent-hover);
-  }
-
-  .loading-spinner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 8px;
-    background-color: var(--background-primary);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    width: 100%;
-    max-width: 600px;
-  }
-
-  .loading-spinner p {
-    margin-top: 20px;
-    color: var(--text-normal);
-    text-align: center;
-    font-size: 1.2em;
-  }
+  @import './SideBar_textsight.scss';
 </style>

@@ -103,6 +103,7 @@ export interface DocumentDetail {
     connections: { connectedDocumentId: string, weight: number }[];
     position?: { x: number, y: number, z: number };
     force?: { x: number, y: number, z: number };
+    content?: string;
     x?: number;
     y?: number;
     z?: number;
