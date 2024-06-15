@@ -153,33 +153,80 @@ export async function fetchAllDocumentIds(): Promise<string[]> {
     return documentAnalysis;
 }
 
-export async function fetchDetailedDocumentData(): Promise<DocumentDetail[]> {
+export async function fetchDetailedDocumentData(filters: any = {}): Promise<DocumentDetail[]> {
+  console.log('Fetching detailed document data with filters:', filters);
   const documents = await db.documents.toArray();
   const detailedDocuments: DocumentDetail[] = [];
 
   for (const document of documents) {
-      const entities = await db.entities.where({ documentId: document.documentId }).toArray();
-      const topics = await db.topics.where({ documentId: document.documentId }).toArray();
-      const keywords = await db.keywords.where({ documentId: document.documentId }).toArray();
-      const sentiments = await db.sentiments.where({ documentId: document.documentId }).toArray();
-      const connections = await db.documentConnections.where({ documentId: document.documentId }).toArray();
+    const entities = await db.entities.where({ documentId: document.documentId }).toArray();
+    const topics = await db.topics.where({ documentId: document.documentId }).toArray();
+    const keywords = await db.keywords.where({ documentId: document.documentId }).toArray();
+    const sentiments = await db.sentiments.where({ documentId: document.documentId }).toArray();
+    const connections = await db.documentConnections.where({ documentId: document.documentId }).toArray();
 
-      // Aggregate all related data into a single object for this document
-      detailedDocuments.push({
-          ...document,
-          entities,
-          topics,
-          keywords,
-          sentiments,
-          connections: connections.map((conn: { connectedDocumentId: any; }) => ({
-              ...conn,
-              connectedDocument: documents.find((d: { documentId: any; }) => d.documentId === conn.connectedDocumentId) || null
-          }))
-      });
+    detailedDocuments.push({
+      ...document,
+      entities,
+      topics,
+      keywords,
+      sentiments,
+      connections: connections.map((conn: { connectedDocumentId: any; }) => ({
+        ...conn,
+        connectedDocument: documents.find((d: { documentId: any; }) => d.documentId === conn.connectedDocumentId) || null
+      }))
+    });
   }
+
   console.log('Detailed document data fetched:', detailedDocuments);
-  return detailedDocuments;
+
+  // Apply filters
+  const filteredDocuments = detailedDocuments.filter(document => {
+    let matches = true;
+
+    if (filters.textSearch) {
+      const textSearch = filters.textSearch.toLowerCase();
+      matches = matches && (
+        (document.content && document.content.toLowerCase().includes(textSearch)) ||
+        document.entities.some(e => e.text.toLowerCase().includes(textSearch)) ||
+        document.keywords.some(k => k.keyword.toLowerCase().includes(textSearch)) ||
+        document.topics.some(t => t.name.toLowerCase().includes(textSearch))
+      );
+    }
+
+    if (filters.entities && filters.entities.length > 0) {
+      matches = matches && filters.entities.some((filterEntity: any) => 
+        document.entities.some(e => e.text === filterEntity)
+      );
+    }
+
+    if (filters.keywords && filters.keywords.length > 0) {
+      matches = matches && filters.keywords.some((filterKeyword: any) => 
+        document.keywords.some(k => k.keyword === filterKeyword)
+      );
+    }
+
+    if (filters.topics && filters.topics.length > 0) {
+      matches = matches && filters.topics.some((filterTopic: any) => 
+        document.topics.some(t => t.name === filterTopic)
+      );
+    }
+
+    if (filters.dateRange && filters.dateRange.start && filters.dateRange.end) {
+      const documentDate = new Date(document.lastAnalyzed);
+      const startDate = new Date(filters.dateRange.start);
+      const endDate = new Date(filters.dateRange.end);
+      matches = matches && documentDate >= startDate && documentDate <= endDate;
+    }
+
+    return matches;
+  });
+
+  return filteredDocuments;
 }
+
+
+
 
 export async function fetchDocumentDataById(documentId: string): Promise<DocumentDetail | null> {
   const document = await db.documents.where({ documentId }).first();
@@ -300,6 +347,26 @@ export async function updateConnection(updatedConnection: IDocumentConnection): 
 }
 
 
+// Fetch all entities
+export async function fetchAllEntities(): Promise<string[]> {
+  const entities = await db.entities.toArray();
+  const entityTexts: any[] = [...new Set(entities.map((e: { text: string }) => e.text))]; // Remove duplicates
+  return entityTexts;
+}
+
+// Fetch all keywords
+export async function fetchAllKeywords(): Promise<string[]> {
+  const keywords = await db.keywords.toArray();
+  const keywordTexts: any[] = [...new Set(keywords.map((k: { keyword: string }) => k.keyword))]; // Remove duplicates
+  return keywordTexts;
+}
+
+// Fetch all topics
+export async function fetchAllTopics(): Promise<string[]> {
+  const topics = await db.topics.toArray();
+  const topicNames: any[] = [...new Set(topics.map((t: { name: string }) => t.name))]; // Remove duplicates
+  return topicNames;
+}
 
 
 export async function dropConnections() {
